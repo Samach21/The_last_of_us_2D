@@ -24,7 +24,8 @@ private:
 	float movementSpeed;
 	float width;
 	float height;
-	float frame;
+	float frameShipLeft;
+	float frameShipTop;
 	bool moving;
 	int ellieStand;
 	int ellieMove;
@@ -32,7 +33,7 @@ private:
 	float aniTime;
 
 	void initVariables();
-	void initShape();
+	void initSprites();
 	void initAnimations();
 public:
 	Player(float x = 0.f, float y = 0.f);

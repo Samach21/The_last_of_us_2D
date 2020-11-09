@@ -2,17 +2,18 @@
 
 void Player::initVariables()
 {
-	this->movementSpeed = 4.5f;
+	this->movementSpeed = 2.f;
 	this->moving = false;
 	this->ellieStand = 1;
 	this->ellieMove = 1;
 	this->turnLeft = false;
 	this->width = 40.f;
 	this->height = 55.f;
-	this->frame = 11.f;
+	this->frameShipLeft = 11.f;
+	this->frameShipTop = 177.f;
 }
 
-void Player::initShape()
+void Player::initSprites()
 {
 	if (!this->texture.loadFromFile("Map/PC Computer - Among Us - Cafeteria Skeld.png"))
 	{
@@ -20,7 +21,7 @@ void Player::initShape()
 	}
 	if (!this->ellieTexture.loadFromFile("Textures/preEllie.png"))
 	{
-		cout << "ERROR" << "\n";
+		cout << "ERROR::COULD NOT LOAD ELLIE TEXTURE." << "\n";
 	}
 	this->currentFrame = IntRect(11.f, 177.f, 40.f, 55.f);
 	this->ellie.setTexture(this->ellieTexture);
@@ -42,7 +43,7 @@ Player::Player(float x, float y)
 	this->sprite.setPosition(x, y);
 
 	this->initVariables();
-	this->initShape();
+	this->initSprites();
 	this->initAnimations();
 }
 
@@ -54,42 +55,70 @@ void Player::updateInput()
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
+		if (Keyboard::isKeyPressed(Keyboard::LShift))
+			this->movementSpeed = 4.5f;
+		else if (Keyboard::isKeyPressed(Keyboard::LControl))
+			this->movementSpeed = 1.5f;
+		else
+			this->movementSpeed = 2.f;
+		if (Keyboard::isKeyPressed(Keyboard::W))
+		{
+			this->movementSpeed = this->movementSpeed * 0.707f;
+			this->sprite.move(0.f, this->movementSpeed);
+		}
+		else if (Keyboard::isKeyPressed(Keyboard::S))
+		{
+			this->movementSpeed = this->movementSpeed * 0.707f;
+			this->sprite.move(0.f, -this->movementSpeed);
+		}
 		this->sprite.move(this->movementSpeed, 0.f);
 		this->moving = true;
 		this->turnLeft = true;
 		this->aniTime = 0.1f;
+	}
+	else if (Keyboard::isKeyPressed(Keyboard::D))
+	{
+		if (Keyboard::isKeyPressed(Keyboard::LShift))
+			this->movementSpeed = 4.5f;
+		else if (Keyboard::isKeyPressed(Keyboard::LControl))
+			this->movementSpeed = 1.5f;
+		else
+			this->movementSpeed = 2.f;
 		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
+			this->movementSpeed = this->movementSpeed * 0.707f;
 			this->sprite.move(0.f, this->movementSpeed);
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::S))
 		{
-		this->sprite.move(0.f, -this->movementSpeed);
+			this->movementSpeed = this->movementSpeed * 0.707f;
+			this->sprite.move(0.f, -this->movementSpeed);
 		}
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::D))
-	{
 		this->sprite.move(-this->movementSpeed, 0.f);
 		this->moving = true;
 		this->turnLeft = false;
 		this->aniTime = 0.1f;
-		if (Keyboard::isKeyPressed(Keyboard::W))
-		{
-			this->sprite.move(0.f, this->movementSpeed);
-		}
-		else if (Keyboard::isKeyPressed(Keyboard::S))
-		{
-			this->sprite.move(0.f, -this->movementSpeed);
-		}
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
+		if (Keyboard::isKeyPressed(Keyboard::LShift))
+			this->movementSpeed = 4.5f;
+		else if (Keyboard::isKeyPressed(Keyboard::LControl))
+			this->movementSpeed = 1.5f;
+		else
+			this->movementSpeed = 2.f;
 		this->sprite.move(0.f, this->movementSpeed);
 		this->moving = true;
 		this->aniTime = 0.1f;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
+		if (Keyboard::isKeyPressed(Keyboard::LShift))
+			this->movementSpeed = 4.5f;
+		else if (Keyboard::isKeyPressed(Keyboard::LControl))
+			this->movementSpeed = 1.5f;
+		else
+			this->movementSpeed = 2.f;
 		this->sprite.move(0.f, -this->movementSpeed);
 		this->moving = true;
 		this->aniTime = 0.1f;
@@ -116,59 +145,51 @@ void Player::updateAnimations()
 		if (this->moving == false)
 		{
 			this->width = 40.f;
+			this->frameShipTop = 177.f;
 			switch (this->ellieStand)
 			{
-			case 1: this->frame = 59.f;
+			case 1: this->frameShipLeft = 59.f;
 				break;
-			case 2: this->frame = 110.f;
+			case 2: this->frameShipLeft = 110.f;
 				break;
-			case 3: this->frame = 11.f;
+			case 3: this->frameShipLeft = 11.f;
 				break;
 			default:
 				break;
 			}
-			if (this->turnLeft == false)
-			{
-				this->currentFrame = IntRect(this->frame, 177.f, this->width, this->height);
-			}
-			else if (this->turnLeft == true)
-			{
-				this->currentFrame = IntRect(this->frame + this->width, 177.f, this->width * (-1), this->height);
-			}
-			this->animationTimer.restart();
-			this->ellie.setTextureRect(this->currentFrame);
 			this->ellieStand++;
 			this->ellieMove = 1;
 		}
 		else
 		{
+			this->frameShipTop = 261.f;
 			this->width = 52.f;
 			switch (this->ellieMove)
 			{
-			case 1: this->frame = 8.f;
+			case 1: this->frameShipLeft = 8.f;
 				break;
-			case 2: this->frame = 65.f;
+			case 2: this->frameShipLeft = 65.f;
 				break;
-			case 3: this->frame = 142.f;
+			case 3: this->frameShipLeft = 142.f;
 				break;
-			case 4: this->frame = 202.f;
+			case 4: this->frameShipLeft = 202.f;
 				break;
 			default:
 				break;
 			}
-			if (this->turnLeft == false)
-			{
-				this->currentFrame = IntRect(this->frame, 261.f, this->width, this->height);
-			}
-			else if (this->turnLeft == true)
-			{
-				this->currentFrame = IntRect(this->frame + this->width, 261.f, this->width * (-1), this->height);
-			}
-			this->animationTimer.restart();
-			this->ellie.setTextureRect(this->currentFrame);
 			this->ellieMove++;
 			this->ellieStand = 1;
 		}
+		if (this->turnLeft == false)
+		{
+			this->currentFrame = IntRect(this->frameShipLeft, this->frameShipTop, this->width, this->height);
+		}
+		else if (this->turnLeft == true)
+		{
+			this->currentFrame = IntRect(this->frameShipLeft + this->width, this->frameShipTop, this->width * (-1), this->height);
+		}
+		this->animationTimer.restart();
+		this->ellie.setTextureRect(this->currentFrame);
 	}
 }
 
