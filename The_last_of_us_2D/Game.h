@@ -12,6 +12,7 @@
 #include<SFML/Network.hpp>
 
 #include "Player.h"
+#include "Map.h"
 
 using namespace std;
 using namespace sf;
@@ -28,6 +29,7 @@ private:
 	bool endGame;
 
 	Player player;
+	Map map;
 
 	void initVariables();
 	void initShaders();

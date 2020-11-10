@@ -13,15 +13,20 @@ using namespace sf;
 class Player
 {
 private:
-	RectangleShape shape;
-	Sprite sprite;
-	Texture texture;
-	Sprite ellie;
-	Texture ellieTexture;
-	IntRect currentFrame;
 	Clock animationTimer;
+	Sprite ellieHead;
+	Sprite ellieLeft;
+	Sprite ellieRight;
+	Sprite ellieBody;
+	Sprite ellieLegs;
+	Sprite ellieShadow;
+	Texture ellieHeadTexture;
+	Texture ellieLeftTexture;
+	Texture ellieRightTexture;
+	Texture ellieBodyTexture;
+	Texture ellieLegsTexture;
+	Texture ellieShadowTexture;
 
-	float movementSpeed;
 	float width;
 	float height;
 	float frameShipLeft;
@@ -32,11 +37,17 @@ private:
 	bool turnLeft;
 	float aniTime;
 
+	float widthCenter;
+	float heightCenter;
+	int aniHeadNumEye;
+	int aniHead;
+	int aniLegs;
+
 	void initVariables();
 	void initSprites();
 	void initAnimations();
 public:
-	Player(float x = 0.f, float y = 0.f);
+	Player();
 	virtual ~Player();
 
 	void updateInput();

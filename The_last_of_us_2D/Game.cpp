@@ -71,6 +71,7 @@ void Game::update()
 	this->pollEvent();
 	if (this->endGame == false)
 	{
+		this->map.update(this->window);
 		this->player.update(this->window);
 	}
 }
@@ -79,6 +80,7 @@ void Game::render()
 {
 	this->window->clear();
 
+	this->map.render(this->window);
 	this->player.render(this->window, &this->coreShader);
 
 	this->window->display();
