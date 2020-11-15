@@ -2,7 +2,7 @@
 
 void Map::initVariables()
 {
-	this->movementSpeed = 2.f;
+	this->movementSpeed = 2.5f;
 }
 
 void Map::initSprites()
@@ -34,7 +34,7 @@ void Map::updateInput()
 			this->movementSpeed = 1.5f;
 		}
 		else {
-			this->movementSpeed = 2.f;
+			this->movementSpeed = 2.5f;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
@@ -57,7 +57,7 @@ void Map::updateInput()
 			this->movementSpeed = 1.5f;
 		}
 		else {
-			this->movementSpeed = 2.f;
+			this->movementSpeed = 2.5f;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
@@ -80,7 +80,7 @@ void Map::updateInput()
 			this->movementSpeed = 1.5f;
 		}
 		else {
-			this->movementSpeed = 2.f;
+			this->movementSpeed = 2.5f;
 		}
 		this->map.move(0.f, this->movementSpeed);
 	}
@@ -93,7 +93,7 @@ void Map::updateInput()
 			this->movementSpeed = 1.5f;
 		}
 		else {
-			this->movementSpeed = 2.f;
+			this->movementSpeed = 2.5f;
 		}
 		this->map.move(0.f, -this->movementSpeed);
 	}

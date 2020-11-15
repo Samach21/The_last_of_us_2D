@@ -32,6 +32,7 @@ private:
 	float frameShipLeft;
 	float frameShipTop;
 	bool moving;
+	bool running;
 	int ellieStand;
 	int ellieMove;
 	bool turnLeft;

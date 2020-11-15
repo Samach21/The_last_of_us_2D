@@ -3,6 +3,7 @@
 void Player::initVariables()
 {
 	this->moving = false;
+	this->running = false;
 	this->ellieStand = 1;
 	this->ellieMove = 1;
 	this->turnLeft = false;
@@ -10,7 +11,7 @@ void Player::initVariables()
 	this->height = 55.f;
 	this->frameShipLeft = 11.f;
 	this->frameShipTop = 177.f;
-	this->widthCenter = 881.25f;
+	this->widthCenter = 890;
 	this->heightCenter = 424.f;
 	this->aniHeadNumEye = 1;
 	this->aniHead = 1;
@@ -20,15 +21,15 @@ void Player::initVariables()
 void Player::initSprites()
 {
 	/*-------------------------------------------------------------------------*/
-	if (!this->ellieHeadTexture.loadFromFile("Textures/head01.png"))
+	if (!this->ellieHeadTexture.loadFromFile("Textures/head01b.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE HEAD TEXTURE." << "\n";
-	if (!this->ellieLeftTexture.loadFromFile("Textures/lefthand.png"))
+	if (!this->ellieLeftTexture.loadFromFile("Textures/handb.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE LEFT TEXTURE." << "\n";
-	if (!this->ellieRightTexture.loadFromFile("Textures/righthand.png"))
+	if (!this->ellieRightTexture.loadFromFile("Textures/handb.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE RIGHT TEXTURE." << "\n";
-	if (!this->ellieBodyTexture.loadFromFile("Textures/body.png"))
+	if (!this->ellieBodyTexture.loadFromFile("Textures/bodyb.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE BODY TEXTURE." << "\n";
-	if (!this->ellieLegsTexture.loadFromFile("Textures/legs.png"))
+	if (!this->ellieLegsTexture.loadFromFile("Textures/legb.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
 	if (!this->ellieShadowTexture.loadFromFile("Textures/shadow.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
@@ -40,11 +41,11 @@ void Player::initSprites()
 	this->ellieLegs.setTexture(this->ellieLegsTexture);
 	this->ellieShadow.setTexture(this->ellieShadowTexture);
 	this->ellieHead.setPosition(this->widthCenter, this->heightCenter);
-	this->ellieBody.setPosition(this->widthCenter + 50.f, this->heightCenter + 105.f);
-	this->ellieLeft.setPosition(this->widthCenter + 40.f, this->heightCenter + 110.f);
-	this->ellieRight.setPosition(this->widthCenter + 100.f, this->heightCenter + 110.f);
-	this->ellieLegs.setPosition(this->widthCenter + 55.f, this->heightCenter + 160.f);
-	this->ellieShadow.setPosition(this->widthCenter + 27.f, this->heightCenter + 178.f);
+	this->ellieBody.setPosition(this->widthCenter + 46.f, this->heightCenter + 80.f);
+	this->ellieLeft.setPosition(this->widthCenter + 40.f, this->heightCenter + 88.f);
+	this->ellieRight.setPosition(this->widthCenter + 85.f, this->heightCenter + 88.f);
+	this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 127.f);
+	this->ellieShadow.setPosition(this->widthCenter + 21.f, this->heightCenter + 143.f);
 	this->ellieHead.scale(0.5f, 0.5f);
 	this->ellieBody.scale(0.5f, 0.5f);
 	this->ellieLeft.scale(0.5f, 0.5f);
@@ -75,13 +76,15 @@ void Player::updateInput()
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
 		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->aniTime = 0.05f;
+			this->aniTime = 0.08f;
+			this->running = true;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
 		}
 		else {
 			this->aniTime = 0.1f;
+			this->running = false;
 		}
 		this->moving = true;
 		this->turnLeft = true;
@@ -89,13 +92,15 @@ void Player::updateInput()
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
 		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->aniTime = 0.05f;
+			this->aniTime = 0.08f;
+			this->running = true;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
 		}
 		else {
 			this->aniTime = 0.1f;
+			this->running = false;
 		}
 		this->moving = true;
 		this->turnLeft = false;
@@ -103,33 +108,37 @@ void Player::updateInput()
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
 		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->aniTime = 0.05f;
+			this->aniTime = 0.08f;
+			this->running = true;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
 		}
 		else {
 			this->aniTime = 0.1f;
+			this->running = false;
 		}
 		this->moving = true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
 		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->aniTime = 0.05f;
+			this->aniTime = 0.08f;
+			this->running = true;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
 		}
 		else {
 			this->aniTime = 0.1f;
+			this->running = false;
 		}
 		this->moving = true;
-		
 	}
 	else
 	{
 		this->moving = false;
+		this->running = false;
 		this->aniTime = 0.13f;
 	}
 }
@@ -144,7 +153,7 @@ void Player::updateAnimations()
 		this->aniHeadNumEye = 1;
 	if (this->aniHead > 2)
 		this->aniHead = 1;
-	if (this->aniLegs > 8)
+	if (this->aniLegs > 4)
 		this->aniLegs = 1;
 	if (this->animationTimer.getElapsedTime().asSeconds() >= this->aniTime)
 	{
@@ -163,9 +172,9 @@ void Player::updateAnimations()
 			default:
 				break;
 			}
-			this->ellieLegsTexture.loadFromFile("Textures/legs.png");
-			this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 104.f, 57.f));
-			this->ellieLegs.setPosition(this->widthCenter + 55.f, this->heightCenter + 160.f);
+			this->ellieLegsTexture.loadFromFile("Textures/legb.png");
+			this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 91.f, 55.f));
+			this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 127.f);
 			this->ellieStand++;
 			this->ellieMove = 1;
 			this->aniLegs = 1;
@@ -174,63 +183,41 @@ void Player::updateAnimations()
 		{
 			this->frameShipTop = 261.f;
 			this->width = 52.f;
-			switch (this->ellieMove)
+			if (this->running == false)
 			{
-			case 1: this->frameShipLeft = 8.f;
-				break;
-			case 2: this->frameShipLeft = 65.f;
-				break;
-			case 3: this->frameShipLeft = 142.f;
-				break;
-			case 4: this->frameShipLeft = 202.f;
-				break;
-			default:
-				break;
+				switch (this->aniLegs)
+				{
+				case 2:
+					this->ellieLegsTexture.loadFromFile("Textures/legbwalk.png");
+					this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 98.f, 57.f));
+					this->ellieLegs.setPosition(this->widthCenter + 49.f, this->heightCenter + 127.f);
+					break;
+				case 4:
+					this->ellieLegsTexture.loadFromFile("Textures/legb01.png");
+					this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 67.f, 55.f));
+					this->ellieLegs.setPosition(this->widthCenter + 58.f, this->heightCenter + 127.f);
+					break;
+				default:
+					break;
+				}
 			}
-			switch (this->aniLegs)
+			else
 			{
-			case 1:
-				this->ellieLegsTexture.loadFromFile("Textures/legs01.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 112.f, 60.f));
-				this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 158.f);
-				break;
-			case 2:
-				this->ellieLegsTexture.loadFromFile("Textures/legs02.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 126.f, 72.f));
-				this->ellieLegs.setPosition(this->widthCenter + 51.f, this->heightCenter + 150.f);
-				break;
-			case 3:
-				this->ellieLegsTexture.loadFromFile("Textures/legs03.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 112.f, 60.f));
-				this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 158.f);
-				break;
-			case 4:
-				this->ellieLegsTexture.loadFromFile("Textures/legs04.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 108.f, 60.f));
-				this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 158.f);
-				break;
-			case 5:
-				this->ellieLegsTexture.loadFromFile("Textures/legs05.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 113.f, 69.f));
-				this->ellieLegs.setPosition(this->widthCenter + 51.f, this->heightCenter + 153.f);
-				break;
-			case 6:
-				this->ellieLegsTexture.loadFromFile("Textures/legs06.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 112.f, 81.f));
-				this->ellieLegs.setPosition(this->widthCenter + 54.f, this->heightCenter + 145.f);
-				break;
-			case 7:
-				this->ellieLegsTexture.loadFromFile("Textures/legs07.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 108.f, 66.f));
-				this->ellieLegs.setPosition(this->widthCenter + 55.f, this->heightCenter + 155.f);
-				break;
-			case 8:
-				this->ellieLegsTexture.loadFromFile("Textures/legs.png");
-				this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 104.f, 57.f));
-				this->ellieLegs.setPosition(this->widthCenter + 55.f, this->heightCenter + 160.f);
-				break;
-			default:
-				break;
+				switch (this->aniLegs)
+				{
+				case 2:
+					this->ellieLegsTexture.loadFromFile("Textures/legbrun.png");
+					this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 115.f, 56.f));
+					this->ellieLegs.setPosition(this->widthCenter + 45.f, this->heightCenter + 127.f);
+					break;
+				case 4:
+					this->ellieLegsTexture.loadFromFile("Textures/legb01.png");
+					this->ellieLegs.setTextureRect(IntRect(0.f, 0.f, 67.f, 55.f));
+					this->ellieLegs.setPosition(this->widthCenter + 58.f, this->heightCenter + 127.f);
+					break;
+				default:
+					break;
+				}
 			}
 			this->ellieMove++;
 			this->aniLegs++;
@@ -246,13 +233,13 @@ void Player::updateAnimations()
 		}
 		switch (this->aniHeadNumEye)
 		{
-		case 1: this->ellieHeadTexture.loadFromFile("Textures/head02.png");
+		case 1: this->ellieHeadTexture.loadFromFile("Textures/head02b.png");
 			break;
-		case 3: this->ellieHeadTexture.loadFromFile("Textures/head01.png");
+		case 3: this->ellieHeadTexture.loadFromFile("Textures/head01b.png");
 			break;
-		case 20: this->ellieHeadTexture.loadFromFile("Textures/head02.png");
+		case 20: this->ellieHeadTexture.loadFromFile("Textures/head02b.png");
 			break;
-		case 22: this->ellieHeadTexture.loadFromFile("Textures/head01.png");
+		case 22: this->ellieHeadTexture.loadFromFile("Textures/head01b.png");
 			break;
 		default:
 			break;
@@ -260,12 +247,12 @@ void Player::updateAnimations()
 		if (this->aniHead == 1)
 		{
 			this->ellieHead.setPosition(this->widthCenter, this->heightCenter + 2.f);
-			this->ellieBody.setPosition(this->widthCenter + 50.f, this->heightCenter + 106.f);
+			this->ellieBody.setPosition(this->widthCenter + 46.f, this->heightCenter + 81.f);
 		}
 		else
 		{
 			this->ellieHead.setPosition(this->widthCenter, this->heightCenter);
-			this->ellieBody.setPosition(this->widthCenter + 50.f, this->heightCenter + 105.f);
+			this->ellieBody.setPosition(this->widthCenter + 46.f, this->heightCenter + 80.f);
 		}
 		this->aniHeadNumEye++;
 		this->aniHead++;
