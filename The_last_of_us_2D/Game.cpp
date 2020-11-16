@@ -19,7 +19,7 @@ void Game::innitWindow()
 	this->videomode.height = 1080;
 	this->videomode.width = 1920;
 	this->window = new RenderWindow(this->videomode, "Test game", Style::Titlebar | Style::Close | Style::Fullscreen);
-	this->window->setFramerateLimit(144);
+	this->window->setFramerateLimit(60);
 }
 
 //public
@@ -71,8 +71,8 @@ void Game::update()
 	this->pollEvent();
 	if (this->endGame == false)
 	{
-		this->map.update(this->window);
-		this->player.update(this->window);
+		this->map.update(this->window, this->window);
+		this->player.update(this->window, this->window);
 	}
 }
 

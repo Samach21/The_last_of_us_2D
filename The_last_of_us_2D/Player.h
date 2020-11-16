@@ -27,22 +27,23 @@ private:
 	Texture ellieLegsTexture;
 	Texture ellieShadowTexture;
 
-	float width;
-	float height;
-	float frameShipLeft;
-	float frameShipTop;
 	bool moving;
 	bool running;
+	bool lying;
+	bool jumping;
+	bool fstLie;
 	int ellieStand;
 	int ellieMove;
 	bool turnLeft;
 	float aniTime;
-
 	float widthCenter;
 	float heightCenter;
 	int aniHeadNumEye;
 	int aniHead;
 	int aniLegs;
+
+	Vector2i mousePosWindow;
+	Vector2f mousePosView;
 
 	void initVariables();
 	void initSprites();
@@ -51,8 +52,9 @@ public:
 	Player();
 	virtual ~Player();
 
+	void updateMousePosition(RenderWindow* window);
 	void updateInput();
 	void updateAnimations();
-	void update(RenderTarget* target);
+	void update(RenderTarget* target, RenderWindow* window);
 	void render(RenderTarget* target, Shader* shader = NULL);
 };

@@ -2,7 +2,9 @@
 
 void Map::initVariables()
 {
-	this->movementSpeed = 2.5f;
+	this->movementSpeed = 5.f;
+	this->turnLeft = false;
+	this->lying = false;
 }
 
 void Map::initSprites()
@@ -23,18 +25,32 @@ Map::~Map()
 {
 }
 
+void Map::updateMousePosition(RenderWindow* window)
+{
+	this->mousePosWindow = Mouse::getPosition(*window);
+	this->mousePosView = window->mapPixelToCoords(this->mousePosWindow);
+	if (this->mousePosWindow.x > 960)
+	{
+		this->turnLeft = false;
+	}
+	else
+	{
+		this->turnLeft = true;
+	}
+}
+
 void Map::updateInput()
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->movementSpeed = 4.5f;
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false) {
+			this->movementSpeed = 10.f;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
-			this->movementSpeed = 1.5f;
+			this->movementSpeed = 4.f;
 		}
 		else {
-			this->movementSpeed = 2.5f;
+			this->movementSpeed = 6.f;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
@@ -50,14 +66,14 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->movementSpeed = 4.5f;
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false) {
+			this->movementSpeed = 10.f;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
-			this->movementSpeed = 1.5f;
+			this->movementSpeed = 4.f;
 		}
 		else {
-			this->movementSpeed = 2.5f;
+			this->movementSpeed = 6.f;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::W))
 		{
@@ -73,34 +89,46 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->movementSpeed = 4.5f;
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
+			this->movementSpeed = 10.f;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
-			this->movementSpeed = 1.5f;
+			this->movementSpeed = 4.f;
 		}
 		else {
-			this->movementSpeed = 2.5f;
+			this->movementSpeed = 6.f;
 		}
 		this->map.move(0.f, this->movementSpeed);
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
-			this->movementSpeed = 4.5f;
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
+			this->movementSpeed = 10.f;
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
-			this->movementSpeed = 1.5f;
+			this->movementSpeed = 4.f;
 		}
 		else {
-			this->movementSpeed = 2.5f;
+			this->movementSpeed = 6.f;
 		}
 		this->map.move(0.f, -this->movementSpeed);
 	}
+	else if (Keyboard::isKeyPressed(Keyboard::C))
+	{
+		if (this->lying == true)
+		{
+			this->lying = false;
+		}
+		else if (this->lying == false)
+		{
+			this->lying = true;
+		}
+	}
 }
 
-void Map::update(RenderTarget* target)
+void Map::update(RenderTarget* target, RenderWindow* window)
 {
+	this->updateMousePosition(window);
 	this->updateInput();
 }
 

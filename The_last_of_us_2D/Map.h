@@ -16,6 +16,11 @@ private:
 	Sprite map;
 	Texture mapTexture;
 
+	bool turnLeft;
+	bool lying;
+	Vector2i mousePosWindow;
+	Vector2f mousePosView;
+
 	float movementSpeed;
 
 	void initVariables();
@@ -24,8 +29,9 @@ public:
 	Map();
 	virtual ~Map();
 
+	void updateMousePosition(RenderWindow* window);
 	void updateInput();
-	void update(RenderTarget* target);
+	void update(RenderTarget* target, RenderWindow* window);
 	void render(RenderTarget* target);
 };
 
