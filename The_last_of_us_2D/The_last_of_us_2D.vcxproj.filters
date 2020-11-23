@@ -28,6 +28,9 @@
       <Filter>Entities</Filter>
     </ClCompile>
     <ClCompile Include="Map.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,6 +42,9 @@
       <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

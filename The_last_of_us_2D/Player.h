@@ -7,6 +7,8 @@
 
 #include<iostream>
 
+#include"Weapons.h"
+
 using namespace std;
 using namespace sf;
 
@@ -26,6 +28,8 @@ private:
 	Texture ellieBodyTexture;
 	Texture ellieLegsTexture;
 	Texture ellieShadowTexture;
+	Clock weaponsTimer;
+	Weapons weapons;
 
 	bool moving;
 	bool running;
@@ -41,6 +45,7 @@ private:
 	int aniHeadNumEye;
 	int aniHead;
 	int aniLegs;
+	int slot;
 
 	Vector2i mousePosWindow;
 	Vector2f mousePosView;
@@ -55,6 +60,7 @@ public:
 	void updateMousePosition(RenderWindow* window);
 	void updateInput();
 	void updateAnimations();
+	void mouseScroll(int a);
 	void update(RenderTarget* target, RenderWindow* window);
 	void render(RenderTarget* target, Shader* shader = NULL);
 };

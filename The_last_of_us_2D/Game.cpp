@@ -18,7 +18,7 @@ void Game::innitWindow()
 {
 	this->videomode.height = 1080;
 	this->videomode.width = 1920;
-	this->window = new RenderWindow(this->videomode, "Test game", Style::Titlebar | Style::Close | Style::Fullscreen);
+	this->window = new RenderWindow(this->videomode, "Test game", Style::Titlebar | Style::Close);
 	this->window->setFramerateLimit(60);
 }
 
@@ -59,6 +59,9 @@ void Game::pollEvent()
 			{
 				this->window->close();
 			}
+			break;
+		case Event::MouseWheelMoved:
+			this->player.mouseScroll(this->ev.mouseWheel.delta);
 			break;
 		default:
 			break;

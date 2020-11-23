@@ -14,6 +14,7 @@ void Player::initVariables()
 	this->aniHeadNumEye = 1;
 	this->aniHead = 1;
 	this->aniLegs = 1;
+	this->slot = 0;
 }
 
 void Player::initSprites()
@@ -56,6 +57,7 @@ void Player::initSprites()
 void Player::initAnimations()
 {
 	this->animationTimer.restart();
+	this->weaponsTimer.restart();
 }
 
 Player::Player()
@@ -165,6 +167,19 @@ void Player::updateInput()
 		this->moving = false;
 		this->running = false;
 		this->aniTime = 0.13f;
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::Q))
+	{
+		if (this->weaponsTimer.getElapsedTime().asSeconds() >= 0.3f)
+		{
+			this->slot--;
+			if (this->slot > 3)
+				this->slot = 0;
+			else if (this->slot < 0)
+				this->slot = 3;
+			this->weaponsTimer.restart();
+		}
 	}
 }
 
@@ -439,27 +454,31 @@ void Player::updateAnimations()
 	}
 }
 
+void Player::mouseScroll(int a)
+{
+	this->slot = slot + a;
+	if (this->slot < 0)
+		this->slot = 3;
+	else if (this->slot > 3)
+		this->slot = 0;
+}
+
 void Player::update(RenderTarget* target, RenderWindow* window)
 {
 	this->updateMousePosition(window);
 	this->updateInput();
 	this->updateAnimations();
+	this->weapons.update(this->turnLeft, this->slot);
 }
 
 void Player::render(RenderTarget* target, Shader* shader)
 {
-	if (shader)
-	{
-		//target->draw(this->ellie, shader);
-	}
-	else
-	{
-		//target->draw(this->ellie);
-	}
 	target->draw(this->ellieShadow);
 	target->draw(this->ellieLegs);
 	target->draw(this->ellieRight);
 	target->draw(this->ellieBody);
+	if (this->slot != 0)
+		this->weapons.render(target);
 	target->draw(this->ellieLeft);
 	target->draw(this->ellieHead);
 }
