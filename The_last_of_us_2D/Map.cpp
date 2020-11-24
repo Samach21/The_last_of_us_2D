@@ -5,6 +5,7 @@ void Map::initVariables()
 	this->movementSpeed = 5.f;
 	this->turnLeft = false;
 	this->lying = false;
+	this->lyingTimer.restart();
 }
 
 void Map::initSprites()
@@ -113,15 +114,12 @@ void Map::updateInput()
 		}
 		this->map.move(0.f, -this->movementSpeed);
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::C))
+	if (Keyboard::isKeyPressed(Keyboard::C))
 	{
-		if (this->lying == true)
+		if (this->lyingTimer.getElapsedTime().asSeconds() >= 0.3f)
 		{
-			this->lying = false;
-		}
-		else if (this->lying == false)
-		{
-			this->lying = true;
+			this->lying = !this->lying;
+			this->lyingTimer.restart();
 		}
 	}
 }

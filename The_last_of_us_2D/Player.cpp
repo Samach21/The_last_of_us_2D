@@ -15,6 +15,8 @@ void Player::initVariables()
 	this->aniHead = 1;
 	this->aniLegs = 1;
 	this->slot = 0;
+	this->j = 0;
+	this->jumpHigh = 0.f;
 }
 
 void Player::initSprites()
@@ -33,6 +35,12 @@ void Player::initSprites()
 	if (!this->ellieShadowTexture.loadFromFile("Textures/shadow.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
 	/*-------------------------------------------------------------------------*/
+	this->ellieHeadTexture.setSmooth(true);
+	this->ellieLeftTexture.setSmooth(true);
+	this->ellieRightTexture.setSmooth(true);
+	this->ellieLegsTexture.setSmooth(true);
+	this->ellieBodyTexture.setSmooth(true);
+	this->ellieShadowTexture.setSmooth(true);
 	this->ellieHead.setTexture(this->ellieHeadTexture);
 	this->ellieLeft.setTexture(this->ellieLeftTexture);
 	this->ellieRight.setTexture(this->ellieRightTexture);
@@ -58,6 +66,7 @@ void Player::initAnimations()
 {
 	this->animationTimer.restart();
 	this->weaponsTimer.restart();
+	this->lyingTimer.restart();
 }
 
 Player::Player()
@@ -89,7 +98,7 @@ void Player::updateInput()
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false) {
 			this->aniTime = 0.08f;
 			this->running = true;
 		}
@@ -104,7 +113,7 @@ void Player::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false) {
 			this->aniTime = 0.08f;
 			this->running = true;
 		}
@@ -119,7 +128,7 @@ void Player::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
 			this->aniTime = 0.08f;
 			this->running = true;
 		}
@@ -134,7 +143,7 @@ void Player::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift)) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
 			this->aniTime = 0.08f;
 			this->running = true;
 		}
@@ -147,37 +156,39 @@ void Player::updateInput()
 		}
 		this->moving = true;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::C))
-	{
-		if (this->lying == true)
-		{
-			this->lying = false;
-		}
-		else if (this->lying == false)
-		{
-			this->lying = true;
-		}
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::Space))
-	{
-		this->jumping = true;
-	}
 	else
 	{
 		this->moving = false;
 		this->running = false;
-		this->aniTime = 0.13f;
+		this->aniTime = 0.1f;
 	}
 
+	if (Keyboard::isKeyPressed(Keyboard::C))
+	{
+		if (this->lyingTimer.getElapsedTime().asSeconds() >= 0.3f)
+		{
+			this->lying = !this->lying;
+			this->lyingTimer.restart();
+			if (!this->ellieLegsTexture.loadFromFile("Textures/legb.png"))
+				cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
+			this->ellieLegs.setTexture(this->ellieLegsTexture);
+		}
+	}
+	if (Keyboard::isKeyPressed(Keyboard::Space) && this->lying == false && this->jumping == false)
+	{
+		this->jumping = true;
+		this->j = 1;
+		this->aniTime = 0.1f;
+	}
 	if (Keyboard::isKeyPressed(Keyboard::Q))
 	{
 		if (this->weaponsTimer.getElapsedTime().asSeconds() >= 0.3f)
 		{
 			this->slot--;
-			if (this->slot > 3)
+			if (this->slot > 4)
 				this->slot = 0;
 			else if (this->slot < 0)
-				this->slot = 3;
+				this->slot = 4;
 			this->weaponsTimer.restart();
 		}
 	}
@@ -197,7 +208,7 @@ void Player::updateAnimations()
 		this->aniLegs = 1;
 	if (this->animationTimer.getElapsedTime().asSeconds() >= this->aniTime)
 	{
-		if (this->lying == false)
+		if (this->lying == false && this->jumping == false)
 		{
 			if (this->fstLie == false)
 			{
@@ -294,19 +305,44 @@ void Player::updateAnimations()
 			{
 				this->ellieHead.setTextureRect(IntRect(0.f, 0.f, 279.f, 181.f));
 				this->ellieBody.setTextureRect(IntRect(0.f, 0.f, 111.f, 108.f));
-				this->ellieLeft.setPosition(this->widthCenter + 37.f, this->heightCenter + 88.f);
 				this->ellieRight.setPosition(this->widthCenter + 84.f, this->heightCenter + 88.f);
-				this->ellieLeft.setTextureRect(IntRect(0.f, 0.f, 84.f, 87.f));
 				this->ellieRight.setTextureRect(IntRect(0.f, 0.f, 84.f, 87.f));
+				if (this->slot == 4 || this->slot == 1)
+				{
+					this->ellieLeftTexture.loadFromFile("Textures/handblong.png");
+					this->ellieLeft.setTexture(this->ellieLeftTexture);
+					this->ellieLeft.setPosition(this->widthCenter + 37.f, this->heightCenter + 88.f);
+					this->ellieLeft.setTextureRect(IntRect(0.f, 0.f, 134.f, 74.f));
+				}
+				else
+				{
+					this->ellieLeftTexture.loadFromFile("Textures/handb.png");
+					this->ellieLeft.setTexture(this->ellieLeftTexture);
+					this->ellieLeft.setPosition(this->widthCenter + 37.f, this->heightCenter + 88.f);
+					this->ellieLeft.setTextureRect(IntRect(0.f, 0.f, 84.f, 87.f));
+				}
 			}
 			else if (this->turnLeft == true)
 			{
 				this->ellieHead.setTextureRect(IntRect(279.f, 0.f, -279.f, 181.f));
 				this->ellieBody.setTextureRect(IntRect(111.f, 0.f, -111.f, 108.f));
-				this->ellieLeft.setPosition(this->widthCenter + 62.f, this->heightCenter + 88.f);
 				this->ellieRight.setPosition(this->widthCenter + 14.f, this->heightCenter + 88.f);
 				this->ellieLeft.setTextureRect(IntRect(84.f, 0.f, -84.f, 87.f));
 				this->ellieRight.setTextureRect(IntRect(84.f, 0.f, -84.f, 87.f));
+				if (this->slot == 4 || this->slot == 1)
+				{
+					this->ellieLeftTexture.loadFromFile("Textures/handblong.png");
+					this->ellieLeft.setTexture(this->ellieLeftTexture);
+					this->ellieLeft.setPosition(this->widthCenter + 36.f, this->heightCenter + 88.f);
+					this->ellieLeft.setTextureRect(IntRect(134.f, 0.f, -134.f, 74.f));
+				}
+				else
+				{
+					this->ellieLeftTexture.loadFromFile("Textures/handb.png");
+					this->ellieLeft.setTexture(this->ellieLeftTexture);
+					this->ellieLeft.setPosition(this->widthCenter + 62.f, this->heightCenter + 88.f);
+					this->ellieLeft.setTextureRect(IntRect(84.f, 0.f, -84.f, 87.f));
+				}
 			}
 			switch (this->aniHeadNumEye)
 			{
@@ -451,6 +487,42 @@ void Player::updateAnimations()
 			this->ellieHead.setTexture(this->ellieHeadTexture);
 			this->animationTimer.restart();
 		}
+		else if (this->jumping == true)
+		{
+			if (this->j == 1)
+			{
+				this->jumpHigh = this->jumpHigh + 1.f;
+				this->ellieHead.move(0.f, -3.f);
+				this->ellieBody.move(0.f, -3.f);
+				this->ellieLeft.move(0.f, -3.f);
+				this->ellieRight.move(0.f, -3.f);
+				this->ellieLegs.move(0.f, -3.f);
+				this->weapons.move(Vector2f(0.f, -3.f));
+				this->aniTime = this->aniTime - 0.005f;
+				if (this->jumpHigh == 20.f)
+				{
+					this->jumpHigh = 0.f;
+					this->j = 2;
+				}
+			}
+			else if (this->j == 2)
+			{
+				this->jumpHigh = this->jumpHigh + 1.f;
+				this->ellieHead.move(0.f, 3.f);
+				this->ellieBody.move(0.f, 3.f);
+				this->ellieLeft.move(0.f, 3.f);
+				this->ellieRight.move(0.f, 3.f);
+				this->ellieLegs.move(0.f, 3.f);
+				this->weapons.move(Vector2f(0.f, 3.f));
+				this->aniTime = this->aniTime + 0.005f;
+				if (this->jumpHigh == 20.f)
+				{
+					this->jumpHigh = 0.f;
+					this->j = 0;
+					this->jumping = false;
+				}
+			}
+		}
 	}
 }
 
@@ -458,8 +530,8 @@ void Player::mouseScroll(int a)
 {
 	this->slot = slot + a;
 	if (this->slot < 0)
-		this->slot = 3;
-	else if (this->slot > 3)
+		this->slot = 4;
+	else if (this->slot > 4)
 		this->slot = 0;
 }
 
@@ -468,7 +540,8 @@ void Player::update(RenderTarget* target, RenderWindow* window)
 	this->updateMousePosition(window);
 	this->updateInput();
 	this->updateAnimations();
-	this->weapons.update(this->turnLeft, this->slot);
+	if (this->jumping == false)
+		this->weapons.update(this->lying, this->jumping, this->turnLeft, this->slot);
 }
 
 void Player::render(RenderTarget* target, Shader* shader)
@@ -478,7 +551,7 @@ void Player::render(RenderTarget* target, Shader* shader)
 	target->draw(this->ellieRight);
 	target->draw(this->ellieBody);
 	if (this->slot != 0)
-		this->weapons.render(target);
+		this->weapons.render(target, this->slot);
 	target->draw(this->ellieLeft);
 	target->draw(this->ellieHead);
 }

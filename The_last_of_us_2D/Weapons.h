@@ -14,8 +14,16 @@ class Weapons
 {
 private:
 	Sprite weapons;
+	Sprite arrow;
 	Texture weaponsTexture;
+	Texture arrowTexture;
+	Clock arrowTime;
 
+	int arrowN;
+	bool lastLying;
+	float lieWidth;
+	float lieHeight;
+	bool checkArrow;
 	int mem;
 	float width;
 	float height;
@@ -28,7 +36,9 @@ public:
 	Weapons();
 	virtual ~Weapons();
 
-	void update(bool turnLeft, int slot);
-	void render(RenderTarget* target);
+	void move(Vector2f x);
+	void updateAnimations(bool lying, bool jumping, bool turnLeft,  int slot);
+	void update(bool lying, bool jumping, bool turnLeft, int slot);
+	void render(RenderTarget* target, int slot);
 };
 

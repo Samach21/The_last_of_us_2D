@@ -15,6 +15,7 @@ class Map
 private:
 	Sprite map;
 	Texture mapTexture;
+	Clock lyingTimer;
 
 	bool turnLeft;
 	bool lying;

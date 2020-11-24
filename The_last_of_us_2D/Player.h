@@ -29,6 +29,7 @@ private:
 	Texture ellieLegsTexture;
 	Texture ellieShadowTexture;
 	Clock weaponsTimer;
+	Clock lyingTimer;
 	Weapons weapons;
 
 	bool moving;
@@ -46,6 +47,8 @@ private:
 	int aniHead;
 	int aniLegs;
 	int slot;
+	int j;
+	float jumpHigh;
 
 	Vector2i mousePosWindow;
 	Vector2f mousePosView;
