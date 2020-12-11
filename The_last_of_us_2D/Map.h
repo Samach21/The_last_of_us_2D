@@ -16,6 +16,7 @@ class Map
 private:
 	
 	Texture mapTexture;
+	Texture mapCheckTexture;
 	Clock lyingTimer;
 	Clock positionTimer;
 	Texture FloorMapTexture;
@@ -76,6 +77,8 @@ public:
 	virtual ~Map();
 
 	Sprite map;
+	Sprite mapCheck;
+	bool renderFrontON;
 	bool isCollide;
 
 	void allmove(float x, float y);
@@ -84,6 +87,7 @@ public:
 	void updateInput();
 	void updatePosition();
 	void updateCollide();
+	void updateRenderFront();
 	void update(RenderTarget* target, RenderWindow* window);
 	void render(RenderTarget* target);
 	void renderFront(RenderTarget* target);

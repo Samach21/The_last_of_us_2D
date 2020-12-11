@@ -17,6 +17,7 @@ void Map::initVariables()
 	this->DSon = true;
 	this->Son = true;
 	this->Won = true;
+	this->renderFrontON = false;
 }
 
 void Map::initSprites()
@@ -33,6 +34,10 @@ void Map::initSprites()
 		cout << "ERROR" << "\n";
 	this->FrontMap.setTexture(this->FrontMapTexture);
 	this->FrontMap.setPosition(Vector2f(-3850.f, -300.f));
+	if (!this->mapCheckTexture.loadFromFile("Map/SkeldFront.png"))
+		cout << "ERROR" << "\n";
+	this->mapCheck.setTexture(this->mapCheckTexture);
+	this->mapCheck.setPosition(Vector2f(-3850.f, -300.f));
 
 	if (!this->dotTexture.loadFromFile("Map/cicle.png"))
 		cout << "ERROR" << "\n";
@@ -88,9 +93,10 @@ void Map::allmove(float x, float y)
 	this->lastPosition.x += x;
 	this->lastPosition.y += y;
 	this->map.setPosition(this->lastPosition);
+	this->mapCheck.setPosition(this->lastPosition);
 	this->FloorMap.setPosition(this->lastPosition);
 	this->FrontMap.setPosition(this->lastPosition);
-	//std::cout << this->lastPosition.x << " " << this->lastPosition.y << std::endl;
+	std::cout << this->lastPosition.x << " " << this->lastPosition.y << std::endl;
 }
 
 void Map::updateMousePosition(RenderWindow* window)
@@ -331,10 +337,15 @@ void Map::updateCollide()
 		this->rightdownBool = false;
 }
 
+void Map::updateRenderFront()
+{
+}
+
 void Map::update(RenderTarget* target, RenderWindow* window)
 {
 	this->updateMousePosition(window);
 	this->updateCollide();
+	this->updateRenderFront();
 	this->updatePosition();
 	this->updateInput();
 }
@@ -347,7 +358,8 @@ void Map::render(RenderTarget* target)
 
 void Map::renderFront(RenderTarget* target)
 {
-	target->draw(this->FrontMap);
+	if (this->renderFrontON == true)
+		target->draw(this->FrontMap);
 	/*target->draw(this->top);
 	target->draw(this->down);
 	target->draw(this->left);

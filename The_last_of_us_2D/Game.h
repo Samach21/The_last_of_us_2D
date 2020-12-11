@@ -14,6 +14,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Collision.h"
+#include "Enemy.h"
 
 using namespace std;
 using namespace sf;
@@ -31,6 +32,7 @@ private:
 
 	Player player;
 	Map map;
+	Enemy enemy;
 
 	void initVariables();
 	void initShaders();

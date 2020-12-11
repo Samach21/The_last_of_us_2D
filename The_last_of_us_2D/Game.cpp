@@ -81,17 +81,15 @@ void Game::update()
 	{
 		this->map.update(this->window, this->window);
 		this->player.update(this->window, this->window);
+		this->enemy.update(this->window);
 		if (Collision::PixelPerfectTest(this->player.ellieShadow, this->map.map))
-		{
-			//std::cout << "yes" << std::endl;
 			this->map.isCollide = true;
-		}
 		else
-		{
-			//std::cout << "no" << std::endl;
 			this->map.isCollide = false;
-		}
-		
+		if (Collision::PixelPerfectTest(this->player.ellieShadow, this->map.mapCheck))
+			this->map.renderFrontON = true;
+		else
+			this->map.renderFrontON = false;
 	}
 }
 
@@ -102,6 +100,7 @@ void Game::render()
 	this->map.render(this->window);
 	this->player.render(this->window, &this->coreShader);
 	this->map.renderFront(this->window);
+	this->enemy.render(this->window);
 
 	this->window->display();
 }
