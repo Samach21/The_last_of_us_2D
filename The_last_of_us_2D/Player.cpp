@@ -15,8 +15,7 @@ void Player::initVariables()
 	this->aniHead = 1;
 	this->aniLegs = 1;
 	this->slot = 0;
-	this->j = 0;
-	this->jumpHigh = 0.f;
+	this->jumpHigh = -15.f;
 }
 
 void Player::initSprites()
@@ -67,6 +66,7 @@ void Player::initAnimations()
 	this->animationTimer.restart();
 	this->weaponsTimer.restart();
 	this->lyingTimer.restart();
+	this->jumpCooldown.restart();
 }
 
 Player::Player()
@@ -177,8 +177,6 @@ void Player::updateInput()
 	if (Keyboard::isKeyPressed(Keyboard::Space) && this->lying == false && this->jumping == false)
 	{
 		this->jumping = true;
-		this->j = 1;
-		this->aniTime = 0.1f;
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Q))
 	{
@@ -487,40 +485,47 @@ void Player::updateAnimations()
 			this->ellieHead.setTexture(this->ellieHeadTexture);
 			this->animationTimer.restart();
 		}
-		else if (this->jumping == true)
+		else if (this->jumping == true && this->jumpCooldown.getElapsedTime().asSeconds() >= 0.2f)
 		{
-			if (this->j == 1)
+			this->ellieHead.move(0.f, this->jumpHigh);
+			this->ellieBody.move(0.f, this->jumpHigh);
+			this->ellieLeft.move(0.f, this->jumpHigh);
+			this->ellieRight.move(0.f, this->jumpHigh);
+			this->ellieLegs.move(0.f, this->jumpHigh);
+			this->weapons.move(Vector2f(0.f, this->jumpHigh));
+			this->jumpHigh = this->jumpHigh + 1.f;
+			if (this->jumpHigh == 15.f)
 			{
-				this->jumpHigh = this->jumpHigh + 1.f;
-				this->ellieHead.move(0.f, -3.f);
-				this->ellieBody.move(0.f, -3.f);
-				this->ellieLeft.move(0.f, -3.f);
-				this->ellieRight.move(0.f, -3.f);
-				this->ellieLegs.move(0.f, -3.f);
-				this->weapons.move(Vector2f(0.f, -3.f));
-				this->aniTime = this->aniTime - 0.005f;
-				if (this->jumpHigh == 20.f)
+				if (this->turnLeft == false)
 				{
-					this->jumpHigh = 0.f;
-					this->j = 2;
+					this->ellieRight.setPosition(this->widthCenter + 84.f, this->heightCenter + 88.f);
+					if (this->slot == 4 || this->slot == 1)
+					{
+						this->ellieLeft.setPosition(this->widthCenter + 37.f, this->heightCenter + 88.f);
+					}
+					else
+					{
+						this->ellieLeft.setPosition(this->widthCenter + 37.f, this->heightCenter + 88.f);
+					}
 				}
-			}
-			else if (this->j == 2)
-			{
-				this->jumpHigh = this->jumpHigh + 1.f;
-				this->ellieHead.move(0.f, 3.f);
-				this->ellieBody.move(0.f, 3.f);
-				this->ellieLeft.move(0.f, 3.f);
-				this->ellieRight.move(0.f, 3.f);
-				this->ellieLegs.move(0.f, 3.f);
-				this->weapons.move(Vector2f(0.f, 3.f));
-				this->aniTime = this->aniTime + 0.005f;
-				if (this->jumpHigh == 20.f)
+				else if (this->turnLeft == true)
 				{
-					this->jumpHigh = 0.f;
-					this->j = 0;
-					this->jumping = false;
+					this->ellieRight.setPosition(this->widthCenter + 14.f, this->heightCenter + 88.f);
+					if (this->slot == 4 || this->slot == 1)
+					{
+						this->ellieLeft.setPosition(this->widthCenter + 36.f, this->heightCenter + 88.f);
+					}
+					else
+					{
+						this->ellieLeft.setPosition(this->widthCenter + 62.f, this->heightCenter + 88.f);
+					}
 				}
+				this->ellieHead.setPosition(this->widthCenter, this->heightCenter);
+				this->ellieBody.setPosition(this->widthCenter + 42.f, this->heightCenter + 80.f);
+				this->ellieLegs.setPosition(this->widthCenter + 52.f, this->heightCenter + 127.f);
+				this->jumpHigh = -15.f;
+				this->jumpCooldown.restart();
+				this->jumping = false;
 			}
 		}
 	}
