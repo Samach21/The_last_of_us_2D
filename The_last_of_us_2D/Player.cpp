@@ -9,7 +9,7 @@ void Player::initVariables()
 	this->ellieStand = 1;
 	this->ellieMove = 1;
 	this->turnLeft = false;
-	this->widthCenter = 890;
+	this->widthCenter = 890.f;
 	this->heightCenter = 424.f;
 	this->aniHeadNumEye = 1;
 	this->aniHead = 1;
@@ -85,13 +85,10 @@ void Player::updateMousePosition(RenderWindow* window)
 	this->mousePosWindow = Mouse::getPosition(*window);
 	this->mousePosView = window->mapPixelToCoords(this->mousePosWindow);
 	if (this->mousePosWindow.x > 960)
-	{
 		this->turnLeft = false;
-	}
 	else
-	{
 		this->turnLeft = true;
-	}
+	//cout << this->mousePosWindow.x << " : " << this->mousePosWindow.y << endl;
 }
 
 void Player::updateInput()

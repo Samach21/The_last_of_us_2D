@@ -13,6 +13,7 @@
 
 #include "Player.h"
 #include "Map.h"
+#include "Collision.h"
 
 using namespace std;
 using namespace sf;
@@ -42,6 +43,7 @@ public:
 
 	void pollEvent();
 
+	void updateCollide();
 	void update();
 
 	void render();

@@ -69,6 +69,11 @@ void Game::pollEvent()
 	}
 }
 
+void Game::updateCollide()
+{
+	
+}
+
 void Game::update()
 {
 	this->pollEvent();
@@ -76,6 +81,17 @@ void Game::update()
 	{
 		this->map.update(this->window, this->window);
 		this->player.update(this->window, this->window);
+		if (Collision::PixelPerfectTest(this->player.ellieShadow, this->map.map))
+		{
+			//std::cout << "yes" << std::endl;
+			this->map.isCollide = true;
+		}
+		else
+		{
+			//std::cout << "no" << std::endl;
+			this->map.isCollide = false;
+		}
+		
 	}
 }
 
@@ -85,6 +101,7 @@ void Game::render()
 
 	this->map.render(this->window);
 	this->player.render(this->window, &this->coreShader);
+	this->map.renderFront(this->window);
 
 	this->window->display();
 }

@@ -21,7 +21,7 @@ private:
 	Sprite ellieRight;
 	Sprite ellieBody;
 	Sprite ellieLegs;
-	Sprite ellieShadow;
+	
 	Texture ellieHeadTexture;
 	Texture ellieLeftTexture;
 	Texture ellieRightTexture;
@@ -59,6 +59,8 @@ private:
 public:
 	Player();
 	virtual ~Player();
+
+	Sprite ellieShadow;
 
 	void updateMousePosition(RenderWindow* window);
 	void updateInput();
