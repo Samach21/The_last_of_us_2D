@@ -26,7 +26,6 @@ private:
 	VideoMode videomode;
 	Event ev;
 
-	Shader coreShader;
 	//logic
 	bool endGame;
 
@@ -35,7 +34,6 @@ private:
 	Enemy enemy;
 
 	void initVariables();
-	void initShaders();
 	void innitWindow();
 public:
 	Game();

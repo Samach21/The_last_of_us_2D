@@ -96,7 +96,7 @@ void Map::allmove(float x, float y)
 	this->mapCheck.setPosition(this->lastPosition);
 	this->FloorMap.setPosition(this->lastPosition);
 	this->FrontMap.setPosition(this->lastPosition);
-	std::cout << this->lastPosition.x << " " << this->lastPosition.y << std::endl;
+	//std::cout << this->lastPosition.x << " " << this->lastPosition.y << std::endl;
 }
 
 void Map::updateMousePosition(RenderWindow* window)

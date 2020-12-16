@@ -546,7 +546,7 @@ void Player::update(RenderTarget* target, RenderWindow* window)
 		this->weapons.update(this->lying, this->jumping, this->turnLeft, this->slot);
 }
 
-void Player::render(RenderTarget* target, Shader* shader)
+void Player::render(RenderTarget* target)
 {
 	target->draw(this->ellieShadow);
 	target->draw(this->ellieLegs);

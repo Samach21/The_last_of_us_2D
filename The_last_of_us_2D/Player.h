@@ -67,5 +67,5 @@ public:
 	void updateAnimations();
 	void mouseScroll(int a);
 	void update(RenderTarget* target, RenderWindow* window);
-	void render(RenderTarget* target, Shader* shader = NULL);
+	void render(RenderTarget* target);
 };

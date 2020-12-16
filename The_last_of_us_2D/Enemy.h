@@ -4,6 +4,7 @@
 #include<SFML/Window.hpp>
 #include<SFML/Audio.hpp>
 #include<SFML/Network.hpp>
+#include<vector>
 
 #include<iostream>
 
@@ -23,14 +24,20 @@ private:
 	float height;
 	float preWidth;
 	float preHeight;
+	float moveY;
+	float lastMoveY;
+	bool turnLeft;
 
 	bool moving;
-	int standNum;
+	bool spawning;
+	bool isDead;
+	int spawnNum;
 	int moveNum;
-	bool turnLeft;
+	int deadNum;
 
 	void initVariables();
 	void initSprite();
+	void initColor();
 	void initAnimetion();
 public:
 	Enemy();

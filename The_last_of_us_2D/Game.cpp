@@ -6,14 +6,6 @@ void Game::initVariables()
 	this->endGame = false;
 }
 
-void Game::initShaders()
-{
-	if (!this->coreShader.loadFromFile("vertexShader.vert", "fragmentShader.frag"))
-	{
-		std::cout << "ERROR::GAMESTATE::COULD NOT LOAD SHADER." << "\n";
-	}
-}
-
 void Game::innitWindow()
 {
 	this->videomode.height = 1080;
@@ -26,7 +18,6 @@ void Game::innitWindow()
 Game::Game()
 {
 	this->initVariables();
-	this->initShaders();
 	this->innitWindow();
 }
 
@@ -98,7 +89,7 @@ void Game::render()
 	this->window->clear();
 
 	this->map.render(this->window);
-	this->player.render(this->window, &this->coreShader);
+	this->player.render(this->window);
 	this->map.renderFront(this->window);
 	this->enemy.render(this->window);
 
