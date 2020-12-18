@@ -69,6 +69,7 @@ private:
 	Texture dotTexture;
 
 	float movementSpeed;
+	int stamina;
 
 	void initVariables();
 	void initSprites();
@@ -88,7 +89,7 @@ public:
 	void updatePosition();
 	void updateCollide();
 	void updateRenderFront();
-	void update(RenderTarget* target, RenderWindow* window);
+	void update(RenderTarget* target, RenderWindow* window, int Stamina);
 	void render(RenderTarget* target);
 	void renderFront(RenderTarget* target);
 };

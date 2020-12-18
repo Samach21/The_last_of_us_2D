@@ -2,6 +2,7 @@
 #define COLLISION_H
 
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 namespace Collision {
 	//////
@@ -37,6 +38,10 @@ namespace Collision {
 	/// Supports scaling and rotation
 	//////
 	bool BoundingBoxTest(const sf::Sprite& Object1, const sf::Sprite& Object2);
+
+	bool Intersects(sf::CircleShape circle, sf::RectangleShape rect);
+
+	bool IntersectsCircle(sf::CircleShape circle1, sf::CircleShape circle2);
 }
 
 #endif	/* COLLISION_H */

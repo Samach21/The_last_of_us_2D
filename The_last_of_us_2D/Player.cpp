@@ -16,6 +16,12 @@ void Player::initVariables()
 	this->aniLegs = 1;
 	this->slot = 0;
 	this->jumpHigh = -15.f;
+	this->playerHealth = 100;
+	this->hitbox = new HitboxComponent(0.f, 0.f, 50.f);
+	this->makeNoise = false;
+	this->stamina = 100;
+	this->ammo = {3, 5, 15, 5};
+	this->firstWalk = false;
 }
 
 void Player::initSprites()
@@ -32,7 +38,7 @@ void Player::initSprites()
 	if (!this->ellieLegsTexture.loadFromFile("Textures/legb.png"))
 		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
 	if (!this->ellieShadowTexture.loadFromFile("Textures/shadow.png"))
-		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
+		cout << "ERROR::COULD NOT LOAD ELLIE SHADOW TEXTURE." << "\n";
 	/*-------------------------------------------------------------------------*/
 	this->ellieHeadTexture.setSmooth(true);
 	this->ellieLeftTexture.setSmooth(true);
@@ -59,6 +65,22 @@ void Player::initSprites()
 	this->ellieLegs.scale(0.5f, 0.5f);
 	this->ellieShadow.scale(0.5f, 0.5f);
 	/*-------------------------------------------------------------------------*/
+	if (!this->loadingTexture.loadFromFile("Textures/bg/loading.png"))
+		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n"; 
+	this->loading.setTexture(this->loadingTexture);
+	this->loading.setPosition(0.f, 0.f);
+
+	this->circle.setFillColor(Color::Transparent);
+	this->circle.setRadius(20.f);
+	this->circle.setOutlineColor(Color::Blue);
+	this->circle.setOutlineThickness(1.f);
+	this->circle.setPosition(this->widthCenter + 50.f, this->heightCenter + 123.f);
+
+	if (!this->sweatTexture.loadFromFile("Textures/water-drops.png"))
+		cout << "ERROR::COULD NOT LOAD ELLIE LEGS TEXTURE." << "\n";
+	this->sweat.setTexture(this->sweatTexture);
+	this->sweat.scale(0.08f, 0.08f);
+	this->sweat.setPosition(this->widthCenter + 95.f, this->heightCenter + 15.f);
 }
 
 void Player::initAnimations()
@@ -67,6 +89,17 @@ void Player::initAnimations()
 	this->weaponsTimer.restart();
 	this->lyingTimer.restart();
 	this->jumpCooldown.restart();
+	this->staminaTime.restart();
+	this->cooldownStamina.restart();
+}
+
+void Player::initSounds()
+{
+	if (!this->walkBuff.loadFromFile("Sounds/playerWalk.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->walk.setBuffer(this->walkBuff);
+	this->walk.setVolume(70.f);
+	this->walk.setLoop(true);
 }
 
 Player::Player()
@@ -78,6 +111,25 @@ Player::Player()
 
 Player::~Player()
 {
+}
+
+HitboxComponent* Player::getHitboxComponent() const
+{
+	return this->hitbox;
+}
+
+void Player::updateSound()
+{
+	if (this->firstWalk)
+	{
+		this->walk.play();
+		this->firstWalk = !this->firstWalk;
+	}
+	else if (!this->moving && this->ad != 0)
+	{
+		this->walk.stop();
+		this->ad = 0;
+	}
 }
 
 void Player::updateMousePosition(RenderWindow* window)
@@ -95,61 +147,85 @@ void Player::updateInput()
 {
 	if (Keyboard::isKeyPressed(Keyboard::A))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false && this->stamina > 0) {
 			this->aniTime = 0.08f;
 			this->running = true;
+			this->makeNoise = true;
+			this->stamina -= 1;
+			if (this->stamina == 0)
+				this->cooldownStamina.restart();
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
+			this->makeNoise = false;
 		}
 		else {
 			this->aniTime = 0.1f;
 			this->running = false;
+			this->makeNoise = true;
 		}
 		this->moving = true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false && this->stamina > 0) {
 			this->aniTime = 0.08f;
 			this->running = true;
+			this->makeNoise = true;
+			this->stamina -= 1;
+			if (this->stamina == 0)
+				this->cooldownStamina.restart();
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
+			this->makeNoise = false;
 		}
 		else {
 			this->aniTime = 0.1f;
 			this->running = false;
+			this->makeNoise = true;
 		}
 		this->moving = true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false && this->stamina > 0) {
 			this->aniTime = 0.08f;
 			this->running = true;
+			this->makeNoise = true;
+			this->stamina -= 1;
+			if (this->stamina == 0)
+				this->cooldownStamina.restart();
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
+			this->makeNoise = false;
 		}
 		else {
 			this->aniTime = 0.1f;
 			this->running = false;
+			this->makeNoise = true;
 		}
 		this->moving = true;
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S))
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false) {
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false && this->stamina > 0) {
 			this->aniTime = 0.08f;
 			this->running = true;
+			this->makeNoise = true;
+			this->stamina -= 1;
+			if (this->stamina == 0)
+				this->cooldownStamina.restart();
 		}
 		else if (Keyboard::isKeyPressed(Keyboard::LControl)) {
 			this->aniTime = 0.1f;
+			this->makeNoise = false;
 		}
 		else {
 			this->aniTime = 0.1f;
 			this->running = false;
+			this->makeNoise = true;
 		}
 		this->moving = true;
 	}
@@ -158,6 +234,7 @@ void Player::updateInput()
 		this->moving = false;
 		this->running = false;
 		this->aniTime = 0.1f;
+		this->makeNoise = false;
 	}
 
 	if (Keyboard::isKeyPressed(Keyboard::C))
@@ -171,9 +248,13 @@ void Player::updateInput()
 			this->ellieLegs.setTexture(this->ellieLegsTexture);
 		}
 	}
-	if (Keyboard::isKeyPressed(Keyboard::Space) && this->lying == false && this->jumping == false)
+	if (Keyboard::isKeyPressed(Keyboard::Space) && this->lying == false && this->jumping == false && this->stamina > 0)
 	{
 		this->jumping = true;
+		this->makeNoise = true;
+		this->stamina -= 10;
+		if (this->stamina <= 0)
+			this->cooldownStamina.restart();
 	}
 	if (Keyboard::isKeyPressed(Keyboard::Q))
 	{
@@ -185,6 +266,28 @@ void Player::updateInput()
 			else if (this->slot < 0)
 				this->slot = 4;
 			this->weaponsTimer.restart();
+		}
+	}
+	if (Keyboard::isKeyPressed(Keyboard::P))
+	{
+		this->playerHealth = 0;
+	}
+}
+
+void Player::updateStamina()
+{
+	//cout << this->stamina << endl;
+	if (this->stamina <= 0) {
+		stamina = 0;
+	}
+	if (this->cooldownStamina.getElapsedTime().asSeconds() >= 2.f) {
+		if (!this->running && !this->jumping && this->staminaTime.getElapsedTime().asSeconds() >= 0.1)
+		{
+			this->staminaTime.restart();
+			if (this->stamina < 100)
+				this->stamina += 1;
+			else
+				this->stamina = 100;
 		}
 	}
 }
@@ -236,6 +339,9 @@ void Player::updateAnimations()
 			}
 			else
 			{
+				this->ad++;
+				if (this->ad == 1)
+					this->firstWalk = true;
 				if (this->running == false)
 				{
 					switch (this->aniLegs)
@@ -539,11 +645,18 @@ void Player::mouseScroll(int a)
 
 void Player::update(RenderTarget* target, RenderWindow* window)
 {
+	this->updateSound();
 	this->updateMousePosition(window);
 	this->updateInput();
+	this->updateStamina();
 	this->updateAnimations();
 	if (this->jumping == false)
 		this->weapons.update(this->lying, this->jumping, this->turnLeft, this->slot);
+}
+
+void Player::renderLoading(RenderTarget* target)
+{
+	target->draw(this->loading);
 }
 
 void Player::render(RenderTarget* target)
@@ -556,4 +669,7 @@ void Player::render(RenderTarget* target)
 		this->weapons.render(target, this->slot);
 	target->draw(this->ellieLeft);
 	target->draw(this->ellieHead);
+	if (this->stamina < 20)
+		target->draw(this->sweat);
+	//target->draw(this->circle);
 }

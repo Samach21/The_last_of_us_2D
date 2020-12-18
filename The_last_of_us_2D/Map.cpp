@@ -113,7 +113,7 @@ void Map::updateInput()
 {
 	if (Keyboard::isKeyPressed(Keyboard::A) && !Keyboard::isKeyPressed(Keyboard::W) && !Keyboard::isKeyPressed(Keyboard::S) && this->Aon == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -123,7 +123,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::A) && Keyboard::isKeyPressed(Keyboard::W) && !Keyboard::isKeyPressed(Keyboard::S) && this->AWon == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -134,7 +134,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::A) && !Keyboard::isKeyPressed(Keyboard::W) && Keyboard::isKeyPressed(Keyboard::S) && this->ASon == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == true && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -145,7 +145,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && !Keyboard::isKeyPressed(Keyboard::W) && !Keyboard::isKeyPressed(Keyboard::S) && this->Don == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -155,7 +155,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && Keyboard::isKeyPressed(Keyboard::W) && !Keyboard::isKeyPressed(Keyboard::S) && this->DWon == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -166,7 +166,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::D) && !Keyboard::isKeyPressed(Keyboard::W) && Keyboard::isKeyPressed(Keyboard::S) && this->DSon == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->turnLeft == false && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -177,7 +177,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::W) && !Keyboard::isKeyPressed(Keyboard::A) && !Keyboard::isKeyPressed(Keyboard::D) && this->Won == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -187,7 +187,7 @@ void Map::updateInput()
 	}
 	else if (Keyboard::isKeyPressed(Keyboard::S) && !Keyboard::isKeyPressed(Keyboard::A) && !Keyboard::isKeyPressed(Keyboard::D) && this->Son == true)
 	{
-		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false)
+		if (Keyboard::isKeyPressed(Keyboard::LShift) && this->lying == false && this->stamina > 0)
 			this->movementSpeed = 10.f;
 		else if (Keyboard::isKeyPressed(Keyboard::LControl))
 			this->movementSpeed = 4.f;
@@ -341,8 +341,10 @@ void Map::updateRenderFront()
 {
 }
 
-void Map::update(RenderTarget* target, RenderWindow* window)
+void Map::update(RenderTarget* target, RenderWindow* window, int Stamina)
 {
+	this->stamina = Stamina;
+
 	this->updateMousePosition(window);
 	this->updateCollide();
 	this->updateRenderFront();

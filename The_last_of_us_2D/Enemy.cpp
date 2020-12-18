@@ -2,7 +2,7 @@
 
 void Enemy::initVariables()
 {
-	this->movementSpeed = 10.f;
+	this->movementSpeed = 5.f;
 	this->preWidth = 13.f;
 	this->preHeight = 72.f;
 	this->width = 78.f;
@@ -16,65 +16,207 @@ void Enemy::initVariables()
 	this->spawning = true;
 	this->isDead = false;
 	this->deadNum = 1;
-}
-
-void Enemy::initSprite()
-{
-	this->currentFrame = IntRect(this->preWidth, this->preHeight + this->height, this->width, -this->height);
-	this->sprite.setTexture(this->texture);
-	this->sprite.setTextureRect(this->currentFrame);
-	this->sprite.scale(1.25f, -1.25f);
-	this->sprite.setPosition(300.f, 300.f);
+	this->isDelete = false;
+	this->killed = false;
+	this->targetLock = false;
+	this->isCollide = false;
+	this->targetPo.x = 0.f;
+	this->targetPo.y = 0.f;
+	this->hearRange = 200.f;
 }
 
 void Enemy::initColor()
 {
-	
-	int type = rand() % 5;
-	switch (type)
-	{
-	case 0:
+	int type = rand() % 100;
+	if (type >= 0 && type < 40) {
 		if (!this->texture.loadFromFile("Textures/red.png"))
 			cout << "ERROR" << "\n";
-		break;
-	case 1:
+		this->enemyType = TYPE::RED; this->enemyHealth = 50; this->hearRange = 200.f; this->typeofenemy = 1;
+	}
+	else if (type >= 40 && type < 65)
+	{
 		if (!this->texture.loadFromFile("Textures/green.png"))
 			cout << "ERROR" << "\n";
-		break;
-	case 2:
+		this->enemyType = TYPE::GREEN; this->enemyHealth = 100; this->hearRange = 300.f; this->typeofenemy = 2;
+	}
+	else if (type >= 65 && type < 78)
+	{
 		if (!this->texture.loadFromFile("Textures/yellow.png"))
 			cout << "ERROR" << "\n";
-		break;
-	case 3:
+		this->enemyType = TYPE::YELLOW; this->enemyHealth = 150; this->hearRange = 300.f; this->typeofenemy = 3;
+	}
+	else if (type >= 78 && type < 90)
+	{
 		if (!this->texture.loadFromFile("Textures/blue.png"))
 			cout << "ERROR" << "\n";
-		break;
-	case 4:
+		this->enemyType = TYPE::BLUE; this->enemyHealth = 150; this->hearRange = 500.f; this->typeofenemy = 4;
+	}
+	else
+	{
 		if (!this->texture.loadFromFile("Textures/Spritesheet.png"))
 			cout << "ERROR" << "\n";
+		this->enemyType = TYPE::RIANBOW; this->enemyHealth = 200; this->hearRange = 500.f; this->typeofenemy = 5;
+	}
+}
+
+void Enemy::initSprite(float x, float y)
+{
+	int type = rand() % 14;
+	switch (type)
+	{
+	case 0: this->enemyposition.x = 3020.f; this->enemyposition.y = 2022.f;//med
+		break;
+	case 1: this->enemyposition.x = 5696.f; this->enemyposition.y = 1321.f;//cafe
+		break;
+	case 2: this->enemyposition.x = 6517.f; this->enemyposition.y = 673.f;//weapon
+		break;
+	case 3: this->enemyposition.x = 7814.f; this->enemyposition.y = 1844.f;//navitop
+		break;
+	case 4: this->enemyposition.x = 7814.f; this->enemyposition.y = 2422.f;//navibottom
+		break;
+	case 5: this->enemyposition.x = 6620.f; this->enemyposition.y = 2428.f;//frontnavi
+		break;
+	case 6: this->enemyposition.x = 5390.f; this->enemyposition.y = 3060.f;//admin
+		break;
+	case 7: this->enemyposition.x = 6646.f; this->enemyposition.y = 3852.f;//rightbottom
+		break;
+	case 8: this->enemyposition.x = 3172.f; this->enemyposition.y = 2713.f;//
+		break;
+	case 9: this->enemyposition.x = 2187.f; this->enemyposition.y = 3735.f;//
+		break;
+	case 10: this->enemyposition.x = 2675.f; this->enemyposition.y = 2520.f;//
+		break;
+	case 11: this->enemyposition.x = 1190.f; this->enemyposition.y = 2520.f;//
+		break;
+	case 12: this->enemyposition.x = 998.f; this->enemyposition.y = 1819.f;//
+		break;
+	case 13: this->enemyposition.x = 2180.f; this->enemyposition.y = 820.f;//
 		break;
 	default:
-		if (!this->texture.loadFromFile("Textures/red.png"))
-			cout << "ERROR" << "\n";
 		break;
 	}
+	x = x + this->enemyposition.x; y = y + this->enemyposition.y;
+	this->currentFrame = IntRect(this->preWidth, this->preHeight + this->height, this->width, -this->height);
+	this->sprite.setTexture(this->texture);
+	this->sprite.setTextureRect(this->currentFrame);
+	this->sprite.scale(1.25f, -1.25f);
+	this->sprite.setPosition(x, y);
+
+	if (!this->ventTexture.loadFromFile("Textures/PC Computer - Among Us - Electrical Skeld.png"))
+		cout << "ERROR" << "\n";
+	this->ventSprite.setTexture(this->ventTexture);
+	this->ventSprite.setTextureRect(IntRect(83.f, 617.f, 53.f, 45.f));
+	this->ventSprite.scale(2.2f, 2.2f);
+	this->ventSprite.setPosition(x , y - 70.f);
+
+	if (!this->shadowTexture.loadFromFile("Textures/shadow.png"))
+		cout << "ERROR::COULD NOT LOAD ENEMY SHADOW TEXTURE." << "\n";
+	this->shadowSprite.setTexture(this->shadowTexture);
+	this->shadowSprite.scale(0.4f, 0.4f);
+	this->shadowSprite.setPosition(x + 9.f, y - 18.f);
+	this->shadowSprite.setColor(Color::Transparent);
+
+	if (!this->bodyTexture.loadFromFile("Textures/enemyBody.png"))
+		cout << "ERROR::COULD NOT LOAD ENEMY SHADOW TEXTURE." << "\n";
+	this->body.setTexture(this->bodyTexture);
+	this->body.scale(0.8f, 0.6f);
+	this->body.setPosition(x + 10.f, y - 140.f);
+
+	this->signSprite.setSize(Vector2f(380.f, 150.f));
+	this->signSprite.setFillColor(Color::Transparent);
+	this->signSprite.setOutlineColor(Color::Red);
+	this->signSprite.setOutlineThickness(1.f);
+	this->signSprite.setPosition(x + 89.f, y - 93.f);
+
+	this->hearCircle.setFillColor(Color::Transparent);
+	this->hearCircle.setRadius(this->hearRange);
+	this->hearCircle.setOutlineColor(Color::Green);
+	this->hearCircle.setOutlineThickness(1.f);
+	this->hearCircle.setPosition(x - 20.f, y - 18.f);
 }
 
 void Enemy::initAnimetion()
 {
 	this->aniTime.restart();
+	this->walkTime.restart();
+	this->wallTime.restart();
 }
 
-Enemy::Enemy()
+Enemy::Enemy(float x, float y)
 {
 	this->initVariables();
 	this->initColor();
-	this->initSprite();
+	this->initSprite(x, y);
 	this->initAnimetion();
 }
 
 Enemy::~Enemy()
 {
+}
+
+void Enemy::walking(float* x, float* y)
+{
+	if ((*x != 0.f || *y != 0.f) && (!this->isCollide))
+	{
+		if (*x < 0.f)
+		{
+			this->turnLeft = true;
+			this->enemyposition.x -= this->movementSpeed;
+			*x += this->movementSpeed;
+			if (*x > 0.f)
+				*x = 0;
+		}
+		else if (*x > 0.f)
+		{
+			this->turnLeft = false;
+			this->enemyposition.x += this->movementSpeed;
+			*x -= this->movementSpeed;
+			if (*x < 0.f)
+				*x = 0;
+		}
+		if (*y < 0.f)
+		{
+			this->enemyposition.y -= this->movementSpeed;
+			*y += this->movementSpeed;
+			if (*y > 0.f)
+				*y = 0;
+		}
+		else if (*y > 0.f)
+		{
+			this->enemyposition.y += this->movementSpeed;
+			*y -= this->movementSpeed;
+			if (*y < 0.f)
+				*y = 0;
+		}
+		this->moving = true;
+	}
+	else
+	{
+		if (this->isCollide)
+		{
+			if (*x < 0.f)
+				this->enemyposition.x += 2 * this->movementSpeed;
+			else if (*x > 0.f)
+				this->enemyposition.x -= 2 * this->movementSpeed;
+			if (*y < 0.f)
+				this->enemyposition.y += 2 * this->movementSpeed;
+			else
+				this->enemyposition.y -= 2 * this->movementSpeed;
+		}
+		this->moving = false;
+		*x = 0.f;
+		*y = 0.f;
+		this->wallTime.restart();
+	}
+}
+
+void Enemy::updateHealth()
+{
+	if (this->enemyHealth <= 0)
+	{
+		this->isDead = true;
+		this->moving = false;
+	}
 }
 
 void Enemy::updateInput()
@@ -89,60 +231,35 @@ void Enemy::updateInput()
 		this->moving = true;
 		this->turnLeft = false;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Up))
-	{
-		this->spawning = true;
-	}
 	else if (Keyboard::isKeyPressed(Keyboard::Down))
 	{
-		this->isDead = true;
+		this->enemyHealth -= 50;
 	}
 	else
 	{
-		this->moving = false;
+		//this->moving = false;
 	}
-	/*if (Keyboard::isKeyPressed(Keyboard::A))
+}
+
+void Enemy::updateWalk()
+{
+	if (this->walkTime.getElapsedTime().asSeconds() >= 0.08f && this->wallTime.getElapsedTime().asSeconds() >= 1.f)
 	{
-		this->sprite.move(-this->movementSpeed, 0.f);
-		this->moving = true;
-		this->turnLeft = true;
-		if (Keyboard::isKeyPressed(Keyboard::W))
+		this->walkTime.restart();
+		if (!this->moving && !this->targetLock)
 		{
-			this->sprite.move(0.f, -this->movementSpeed);
+			this->randposi.x = static_cast<float>(rand() % 300) - 150.f;
+			this->randposi.y = static_cast<float>(rand() % 300) - 150.f;
+			this->movementSpeed = 6.f;
 		}
-		else if (Keyboard::isKeyPressed(Keyboard::S))
+		else if (this->targetLock)
 		{
-			this->sprite.move(0.f, this->movementSpeed);
+			this->randposi.x = this->targetPo.x;
+			this->randposi.y = this->targetPo.y;
+			this->movementSpeed = 12.f;
 		}
+		walking(&randposi.x, &randposi.y);
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::D))
-	{
-		this->sprite.move(this->movementSpeed, 0.f);
-		this->moving = true;
-		this->turnLeft = false;
-		if (Keyboard::isKeyPressed(Keyboard::W))
-		{
-			this->sprite.move(0.f, -this->movementSpeed);
-		}
-		else if (Keyboard::isKeyPressed(Keyboard::S))
-		{
-			this->sprite.move(0.f, this->movementSpeed);
-		}
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::W))
-	{
-		this->sprite.move(0.f, -this->movementSpeed);
-		this->moving = true;
-	}
-	else if (Keyboard::isKeyPressed(Keyboard::S))
-	{
-		this->sprite.move(0.f, this->movementSpeed);
-		this->moving = true;
-	}
-	else
-	{
-		this->moving = false;
-	}*/
 }
 
 void Enemy::updateAnimation()
@@ -160,8 +277,10 @@ void Enemy::updateAnimation()
 	{
 		this->deadNum = 1;
 		this->isDead = false;
+		this->killed = true;
+		this->killedTime.restart();
 	}
-	if (this->aniTime.getElapsedTime().asSeconds() >= 0.04f)
+	if (this->aniTime.getElapsedTime().asSeconds() >= 0.04f && !this->killed)
 	{
 		if (this->isDead == false)
 		{
@@ -323,6 +442,7 @@ void Enemy::updateAnimation()
 				this->currentFrame = IntRect(this->preWidth, this->preHeight + this->height, this->width, -this->height);
 			else
 				this->currentFrame = IntRect(this->preWidth + this->width, this->preHeight + this->height, -this->width, -this->height);
+			this->signSprite.setTextureRect(IntRect(0.f, 0.f, 450.f, 150.f));
 		}
 		else if (this->turnLeft == true)
 		{
@@ -330,19 +450,47 @@ void Enemy::updateAnimation()
 				this->currentFrame = IntRect(this->preWidth + this->width, this->preHeight + this->height, -this->width, -this->height);
 			else
 				this->currentFrame = IntRect(this->preWidth, this->preHeight + this->height, this->width, -this->height);
+			this->signSprite.setTextureRect(IntRect(450.f, 0.f, -450.f, 150.f));
 		}
 		this->sprite.setTextureRect(this->currentFrame);
 		this->aniTime.restart();
 	}
+	else if (this->killed && this->killedTime.getElapsedTime().asSeconds() >= 10.f)
+	{
+		this->isDelete = true;
+	}
 }
 
-void Enemy::update(RenderTarget* target)
+void Enemy::updatePosition(float x, float y)
 {
+	this->sprite.setPosition(x + this->enemyposition.x, y + this->enemyposition.y);
+	this->body.setPosition(x + this->enemyposition.x + 10.f, y + this->enemyposition.y - 130.f);
+	this->ventSprite.setPosition(x + this->enemyposition.x, y + this->enemyposition.y - 70.f);
+	this->shadowSprite.setPosition(x + this->enemyposition.x + 9.f, y + this->enemyposition.y - 18.f);
+	this->hearCircle.setPosition(x + this->enemyposition.x + 48.f - this->hearRange, y + this->enemyposition.y - 15.f - this->hearRange);
+	if (!this->turnLeft)
+		this->signSprite.setPosition(x + this->enemyposition.x + 89.f, y + this->enemyposition.y - 93.f);
+	else
+		this->signSprite.setPosition(x + this->enemyposition.x + 9.f - 380.f, y + this->enemyposition.y - 93.f);
+}
+
+void Enemy::update(RenderTarget* target, float x, float y)
+{
+	this->updateHealth();
 	this->updateInput();
+	if (!this->isDead)
+		this->updateWalk();
+	this->updatePosition(x, y);
 	this->updateAnimation();
 }
 
 void Enemy::render(RenderTarget* target)
 {
+	if (this->spawning)
+		target->draw(this->ventSprite);
 	target->draw(this->sprite);
+	//target->draw(this->signSprite);
+	//target->draw(this->hearCircle);
+	//target->draw(this->body);
+	//target->draw(this->shadowSprite);
 }

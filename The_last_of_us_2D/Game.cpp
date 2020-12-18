@@ -1,97 +1,166 @@
 #include "Game.h"
-//private
+
+//Static functions
+
 void Game::initVariables()
 {
-	this->window = nullptr;
-	this->endGame = false;
+    this->window = NULL;
+    this->fullscreen = false;
+
+    this->dt = 0.f;
 }
 
-void Game::innitWindow()
+//Initializer functions
+void Game::initWindow()
 {
-	this->videomode.height = 1080;
-	this->videomode.width = 1920;
-	this->window = new RenderWindow(this->videomode, "Test game", Style::Titlebar | Style::Close);
-	this->window->setFramerateLimit(60);
+    /*Creates a SFML window using options from a window.ini file.*/
+
+    std::ifstream ifs("Config/window.ini");
+    this->videoModes = sf::VideoMode::getFullscreenModes();
+
+    std::string title = "None";
+    sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
+    bool fullscreen = false;
+    unsigned framerate_limit = 60;
+    bool vertical_sync_enabled = false;
+    unsigned antialiasing_level = 0;
+
+    if (ifs.is_open())
+    {
+        std::getline(ifs, title);
+        ifs >> window_bounds.width >> window_bounds.height;
+        ifs >> fullscreen;
+        ifs >> framerate_limit;
+        ifs >> vertical_sync_enabled;
+        ifs >> antialiasing_level;
+    }
+
+    ifs.close();
+
+    this->fullscreen = fullscreen;
+    this->windowSettings.antialiasingLevel = antialiasing_level;
+    if (this->fullscreen)
+        this->window = new sf::RenderWindow(window_bounds, title, sf::Style::Fullscreen, windowSettings);
+    else
+        this->window = new sf::RenderWindow(window_bounds, title, sf::Style::Titlebar | sf::Style::Close, windowSettings);
+    this->window->setFramerateLimit(framerate_limit);
+    this->window->setVerticalSyncEnabled(vertical_sync_enabled);
 }
 
-//public
+void Game::initKeys()
+{
+    std::ifstream ifs("Config/supported_keys.ini");
+
+    if (ifs.is_open())
+    {
+        std::string key = "";
+        int key_value = 0;
+
+        while (ifs >> key >> key_value)
+        {
+            this->supportedKeys[key] = key_value;
+            std::cout << key << " " << key_value << std::endl;
+        }
+    }
+
+    ifs.close();
+}
+
+void Game::initStates()
+{
+    this->states.push(new MainMenuState(this->window, &this->supportedKeys, &this->states, &this->shouldPollEvent));
+}
+
+//Constructors/Destructors
 Game::Game()
 {
-	this->initVariables();
-	this->innitWindow();
+    this->shouldPollEvent = true;
+    this->initWindow();
+    this->initKeys();
+    this->initStates();
 }
 
 Game::~Game()
 {
-	delete this->window;
+    delete this->window;
+
+    while (!this->states.empty())
+    {
+        delete this->states.top();
+        this->states.pop();
+    }
 }
 
-const bool Game::running() const
+// Functions
+
+void Game::endApplication()
 {
-	return this->window->isOpen();
+    std::cout << "Ending Application" << "\n";
 }
 
-const bool Game::getEndGame() const
+void Game::updateDt()
 {
-	return this->endGame;
+    /*Updates the dt variable with the time it takes to update and render one frame.*/
+    this->dt = this->dtClock.restart().asSeconds();
 }
 
-void Game::pollEvent()
+void Game::updateSFMLEvents()
 {
-	while (this->window->pollEvent(this->ev))
-	{
-		switch (this->ev.type)
-		{
-		case Event::Closed:
-			this->window->close();
-			break;
-		case Event::KeyPressed:
-			if (this->ev.key.code == Keyboard::Escape)
-			{
-				this->window->close();
-			}
-			break;
-		case Event::MouseWheelMoved:
-			this->player.mouseScroll(this->ev.mouseWheel.delta);
-			break;
-		default:
-			break;
-		}
-	}
-}
+    while (this->window->pollEvent(this->sfEvent))
+    {
+        if (this->sfEvent.type == sf::Event::Closed)
+            this->window->close();
+    }
 
-void Game::updateCollide()
-{
-	
+
 }
 
 void Game::update()
 {
-	this->pollEvent();
-	if (this->endGame == false)
-	{
-		this->map.update(this->window, this->window);
-		this->player.update(this->window, this->window);
-		this->enemy.update(this->window);
-		if (Collision::PixelPerfectTest(this->player.ellieShadow, this->map.map))
-			this->map.isCollide = true;
-		else
-			this->map.isCollide = false;
-		if (Collision::PixelPerfectTest(this->player.ellieShadow, this->map.mapCheck))
-			this->map.renderFrontON = true;
-		else
-			this->map.renderFrontON = false;
-	}
+    if (shouldPollEvent) this->updateSFMLEvents();
+
+    if (!this->states.empty())
+    {
+        this->states.top()->update(this->dt);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(sf::Keyboard::Escape))) {
+            this->states.top()->toggleStatePaused();
+        }
+
+        if (this->states.top()->getQuit())
+        {
+            this->states.top()->endState();
+            delete this->states.top();
+            this->states.pop();
+        }
+    }
+    // Application end
+    else
+    {
+        this->endApplication();
+        this->window->close();
+    }
 }
 
 void Game::render()
 {
-	this->window->clear();
+    this->window->clear();
 
-	this->map.render(this->window);
-	this->player.render(this->window);
-	this->map.renderFront(this->window);
-	this->enemy.render(this->window);
 
-	this->window->display();
+    // Render items
+    if (!this->states.empty())
+    {
+        this->states.top()->render(this->window);
+    }
+    this->window->display();
+}
+
+void Game::run()
+{
+    while (this->window->isOpen())
+    {
+        this->updateDt();
+        this->update();
+        this->render();
+    }
 }

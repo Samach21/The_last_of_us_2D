@@ -6,6 +6,7 @@
 #include<SFML/Network.hpp>
 
 #include<iostream>
+#include <stack>
 
 using namespace std;
 using namespace sf;

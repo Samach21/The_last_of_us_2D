@@ -1,50 +1,50 @@
-#pragma once
-
-#include<iostream>
-#include<vector>
-#include<ctime>
-#include<sstream>
-
-#include<SFML/Graphics.hpp>
-#include<SFML/System.hpp>
-#include<SFML/Window.hpp>
-#include<SFML/Audio.hpp>
-#include<SFML/Network.hpp>
-
-#include "Player.h"
-#include "Map.h"
-#include "Collision.h"
-#include "Enemy.h"
-
-using namespace std;
-using namespace sf;
+#include "MainMenuState.h"
 
 class Game
 {
 private:
-	RenderWindow* window;
-	VideoMode videomode;
-	Event ev;
+	// Variables
+	sf::RenderWindow* window;
+	sf::Event sfEvent;
+	std::vector<sf::VideoMode> videoModes;
+	sf::ContextSettings windowSettings;
+	bool fullscreen;
+	bool shouldPollEvent;
 
-	//logic
-	bool endGame;
 
-	Player player;
-	Map map;
-	Enemy enemy;
+	/*delta keep track of game for how long to do one update and one render call*/
+	sf::Clock dtClock;
+	float dt;
 
+	/*Keep track all states in game*/
+	std::stack<State*> states;
+
+	std::map<std::string, int> supportedKeys;
+
+	// Initialization
 	void initVariables();
-	void innitWindow();
+	void initWindow();
+	void initKeys();
+	void initStates();
+
 public:
+	//Constructors/Destructors
 	Game();
 	virtual ~Game();
-	const bool running() const;
-	const bool getEndGame() const;
 
-	void pollEvent();
+	// Functions 
 
-	void updateCollide();
+	// Regular
+	void endApplication();
+
+	// Update
+	void updateDt();
+	void updateSFMLEvents();
 	void update();
 
+	// Render
 	void render();
+
+	// Core
+	void run();
 };

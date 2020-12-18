@@ -14,10 +14,32 @@ using namespace sf;
 class Enemy
 {
 private:
-	Sprite sprite;
+	enum class TYPE{
+		RED,
+		GREEN,
+		BLUE,
+		YELLOW,
+		RIANBOW
+	};
+	TYPE enemyType;
 	Texture texture;
+	Sprite ventSprite;
+	Texture ventTexture;
 	IntRect currentFrame;
 	Clock aniTime;
+	Texture shadowTexture;
+	Texture bodyTexture;
+
+	Clock walkTime;
+	Clock wallTime;
+
+	struct EnemyPosition
+	{
+		float x;
+		float y;
+	};
+	EnemyPosition enemyposition;
+	EnemyPosition randposi;
 
 	float movementSpeed;
 	float width;
@@ -27,24 +49,44 @@ private:
 	float moveY;
 	float lastMoveY;
 	bool turnLeft;
+	float hearRange;
 
 	bool moving;
 	bool spawning;
-	bool isDead;
 	int spawnNum;
 	int moveNum;
 	int deadNum;
 
+	Clock killedTime;
+	bool killed;
+
 	void initVariables();
-	void initSprite();
 	void initColor();
+	void initSprite(float x, float y);
 	void initAnimetion();
 public:
-	Enemy();
+	Enemy(float x, float y);
 	virtual ~Enemy();
 
+	bool isDelete;
+	bool targetLock;
+	bool isCollide;
+	bool isDead;
+	Sprite shadowSprite;
+	RectangleShape signSprite;
+	EnemyPosition targetPo;
+	CircleShape hearCircle;
+	int enemyHealth;
+	Sprite sprite;
+	Sprite body;
+	int typeofenemy;
+
+	void walking(float* x, float* y);
+	void updateHealth();
 	void updateInput();
+	void updateWalk();
 	void updateAnimation();
-	void update(RenderTarget* target);
+	void updatePosition(float x, float y);
+	void update(RenderTarget* target, float x, float y);
 	void render(RenderTarget* target);
 };

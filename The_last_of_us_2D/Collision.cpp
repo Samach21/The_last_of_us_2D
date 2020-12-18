@@ -183,4 +183,35 @@ namespace Collision
 		}
 		return true;
 	}
+	bool Intersects(sf::CircleShape circle, sf::RectangleShape rect)
+	{
+		float radius = circle.getRadius();
+		float cx = circle.getPosition().x + radius;
+		float cy = circle.getPosition().y + radius;
+		float left = rect.getPosition().x;
+		float top = rect.getPosition().y;
+		float right = rect.getPosition().x + rect.getSize().x;
+		float bottom = rect.getPosition().y + rect.getSize().y;
+		float closestX = (cx < left ? left : (cx > right ? right : cx));
+		float closestY = (cy < top ? top : (cy > bottom ? bottom : cy));
+		float dx = closestX - cx;
+		float dy = closestY - cy;
+
+		return (dx * dx + dy * dy) <= radius * radius;
+	}
+	bool IntersectsCircle(sf::CircleShape circle1, sf::CircleShape circle2)
+	{
+		float radius1 = circle1.getRadius();
+		float c1x = circle1.getPosition().x + radius1;
+		float c1y = circle1.getPosition().y + radius1;
+		float radius2 = circle2.getRadius();
+		float c2x = circle2.getPosition().x + radius2;
+		float c2y = circle2.getPosition().y + radius2;
+		float dx = c1x - c2x, dy = c1y - c2y;
+		float dis = sqrtf((dx * dx) + (dy * dy));
+		if (dis <= radius1 + radius2)
+			return true;
+		else
+			return false;
+	}
 }
