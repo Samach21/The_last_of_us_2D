@@ -155,7 +155,7 @@ void Enemy::initSounds()
 	if (!this->ventBuff.loadFromFile("Sounds/vent.wav"))
 		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
 	this->vent.setBuffer(this->ventBuff);
-	this->vent.setVolume(50.f);
+	this->vent.setVolume(0.f);
 
 	if (!this->walkBuff.loadFromFile("Sounds/enemyWalk.wav"))
 		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");

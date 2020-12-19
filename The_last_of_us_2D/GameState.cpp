@@ -349,6 +349,11 @@ void GameState::updateInput()
 		this->showEnemy = true;
 	else
 		this->showEnemy = false;
+
+	if (Keyboard::isKeyPressed(Keyboard::P))
+	{
+		this->endGame();
+	}
 }
 
 void GameState::updateEnemiesCollide()

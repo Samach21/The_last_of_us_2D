@@ -271,10 +271,6 @@ void Player::updateInput()
 			this->weaponsTimer.restart();
 		}
 	}
-	if (Keyboard::isKeyPressed(Keyboard::P))
-	{
-		this->playerHealth = 0;
-	}
 }
 
 void Player::updateStamina()
