@@ -107,6 +107,7 @@ Player::Player()
 	this->initVariables();
 	this->initSprites();
 	this->initAnimations();
+	this->initSounds();
 }
 
 Player::~Player()
@@ -120,10 +121,12 @@ HitboxComponent* Player::getHitboxComponent() const
 
 void Player::updateSound()
 {
-	if (this->firstWalk)
+	if (this->moving) {
+		this->ad++;
+	}
+	if (this->ad == 1)
 	{
 		this->walk.play();
-		this->firstWalk = !this->firstWalk;
 	}
 	else if (!this->moving && this->ad != 0)
 	{
@@ -645,9 +648,9 @@ void Player::mouseScroll(int a)
 
 void Player::update(RenderTarget* target, RenderWindow* window)
 {
-	this->updateSound();
 	this->updateMousePosition(window);
 	this->updateInput();
+	this->updateSound();
 	this->updateStamina();
 	this->updateAnimations();
 	if (this->jumping == false)

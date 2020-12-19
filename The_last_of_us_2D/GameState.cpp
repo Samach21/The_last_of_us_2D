@@ -136,6 +136,17 @@ void GameState::initSounds()
 		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
 	this->bow.setBuffer(this->bowBuff);
 	this->bow.setVolume(50.f);
+
+	if (!this->killedBuff.loadFromFile("Sounds/enemyDeath.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->kill.setBuffer(this->killedBuff);
+	this->kill.setVolume(50.f);
+
+	if (!this->walkBuff.loadFromFile("Sounds/playerWalk.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->walk.setBuffer(this->walkBuff);
+	this->walk.setVolume(70.f);
+	this->walk.setLoop(true);
 }
 
 void GameState::spawnEnemies()
@@ -164,7 +175,43 @@ void GameState::updateEnemiesKilled()
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
 		if (this->enemies[i]->isDelete == true) {
+			this->lastx = this->enemies[i]->sprite.getPosition().x;
+			this->lasty = this->enemies[i]->sprite.getPosition().y;
 			this->enemies.erase(this->enemies.begin() + i);
+			int type = rand() % 3;
+			if (type != 2)
+				this->ammoBoxs.push_back(new AmmoBox(this->lastx, this->lasty, this->map.map.getPosition().x, this->map.map.getPosition().y));
+		}
+	}
+}
+
+void GameState::updateAmmoBoxs()
+{
+	//cout << this->ammoBoxs.size() << endl;
+	for (int i = 0; i < this->ammoBoxs.size(); i++)
+	{
+		this->ammoBoxs[i]->update(this->window, this->map.map.getPosition().x, this->map.map.getPosition().y);
+		
+		if (Collision::PixelPerfectTest(this->ammoBoxs[i]->sprite, this->player.ellieShadow))
+			this->ammoBoxs[i]->isDelete = true;
+
+		if (this->ammoBoxs[i]->isDelete == true) {
+			if (this->ammoBoxs[i]->isTake == false) {
+				switch (this->ammoBoxs[i]->typeOfAmmoBox)
+				{
+				case 1: this->player.ammo.minigun += 3;
+					break;
+				case 2: this->player.ammo.bow += 3;
+					break;
+				case 3: this->player.ammo.shotgun += 3;
+					break;
+				case 4: this->player.ammo.ak += 10;
+					break;
+				default:
+					break;
+				}
+			}
+			this->ammoBoxs.erase(this->ammoBoxs.begin() + i);
 		}
 	}
 }
@@ -197,6 +244,7 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string, int>* suppo
 	this->bulletClock.restart();
 	this->showEnemy = false;
 	this->resetDeathClock = false;
+	this->playerNum = 0;
 
 	if (!this->shaderTexture.loadFromFile("Textures/shader.png"))
 		std::cout << "ERROR::COULD NOT LOAD TEXTURE." << "\n";
@@ -311,8 +359,10 @@ void GameState::updateEnemiesCollide()
 			this->enemies[i]->isCollide = true;
 		else
 			this->enemies[i]->isCollide = false;
-		if (Collision::PixelPerfectTest(this->enemies[i]->shadowSprite, this->player.ellieShadow) && !this->enemies[i]->isDead)
+		if (Collision::PixelPerfectTest(this->enemies[i]->shadowSprite, this->player.ellieShadow) && !this->enemies[i]->isDead) {
 			this->player.playerHealth -= 100;
+			this->lastEnemy = &enemies[i]->sprite;
+		}
 		if (Collision::Intersects(this->player.circle, this->enemies[i]->signSprite) &&
 			this->enemies[i]->typeofenemy != 3 &&
 			this->enemies[i]->typeofenemy != 4) {
@@ -447,6 +497,11 @@ void GameState::updateDeleteBullet()
 	}
 }
 
+void GameState::updateSound()
+{
+	
+}
+
 void GameState::updatePausedMenu()
 {
 	for (auto button : this->pausedButtons) {
@@ -463,6 +518,10 @@ void GameState::updatePausedMenu()
 		this->click.play();
 		this->backgroundSound->play();
 		this->bgMapSound.stop();
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			this->enemies[i]->walk.stop();
+		}
 		this->endState();
 	}
 }
@@ -480,6 +539,10 @@ void GameState::updateEndMenu()
 		this->click.play();
 		this->backgroundSound->play();
 		this->bgMapSound.stop();
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			this->enemies[i]->walk.stop();
+		}
 		this->endState();
 		this->updateAndSaveScore();
 	}
@@ -558,6 +621,7 @@ void GameState::update(const float& dt)
 		this->updateBulletsCollide();
 		this->updateDeleteBullet();
 		this->updateEnemiesKilled();
+		this->updateAmmoBoxs();
 		if (!this->resetDeathClock)
 			this->player.update(this->window, this->window);
 		this->map.update(this->window, this->window, this->player.stamina);
@@ -593,6 +657,14 @@ void GameState::renderEnemies(sf::RenderTarget* target)
 	for (int i = 0; i < this->enemies.size(); i++)
 	{
 		this->enemies[i]->render(this->window);
+	}
+}
+
+void GameState::renderAmmoBoxs(sf::RenderTarget* target)
+{
+	for (int i = 0; i < this->ammoBoxs.size(); i++)
+	{
+		this->ammoBoxs[i]->render(this->window);
 	}
 }
 
@@ -635,6 +707,7 @@ void GameState::render(sf::RenderTarget* target)
 	this->map.render(this->window);
 	if (!this->resetDeathClock) {
 		this->renderEnemies(target);
+		this->renderAmmoBoxs(target);
 		this->player.render(this->window);
 	}
 	this->renderBullets(target);
@@ -644,7 +717,7 @@ void GameState::render(sf::RenderTarget* target)
 	if (this->resetDeathClock) {
 		target->draw(this->death);
 		this->player.render(this->window);
-		this->renderEnemies(target);
+		target->draw(*this->lastEnemy);
 	}
 	this->renderTime(target);
 	for (int i = 0; i < enemies.size() && this->showEnemy; i++)

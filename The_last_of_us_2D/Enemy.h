@@ -60,14 +60,25 @@ private:
 	Clock killedTime;
 	bool killed;
 
+	SoundBuffer killedBuff;
+	Sound kill;
+	SoundBuffer walkBuff;
+
+	SoundBuffer ventBuff;
+	Sound vent;
+
+	long a, b, c;
+
 	void initVariables();
 	void initColor();
 	void initSprite(float x, float y);
 	void initAnimetion();
+	void initSounds();
 public:
 	Enemy(float x, float y);
 	virtual ~Enemy();
 
+	Sound walk;
 	bool isDelete;
 	bool targetLock;
 	bool isCollide;
@@ -85,6 +96,7 @@ public:
 	void updateHealth();
 	void updateInput();
 	void updateWalk();
+	void updateSound();
 	void updateAnimation();
 	void updatePosition(float x, float y);
 	void update(RenderTarget* target, float x, float y);

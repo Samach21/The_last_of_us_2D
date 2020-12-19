@@ -10,6 +10,7 @@
 #include "Collision.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "AmmoBox.h"
 
 class GameState :
     public State
@@ -21,6 +22,7 @@ private:
         END
     };
     std::vector<Enemy*> enemies;
+    std::vector<AmmoBox*> ammoBoxs;
     std::vector<Bullet*> bullets;
     sf::Clock spawnCooldown;
     bool firstSpawn;
@@ -63,6 +65,11 @@ private:
     Sound bow;
     Sound shotgun;
 
+    SoundBuffer killedBuff;
+    Sound kill;
+    SoundBuffer walkBuff;
+    Sound walk;
+
     sf::Sound* backgroundSound;
 
     Player player;
@@ -81,6 +88,12 @@ private:
     bool resetDeathClock;
 
     bool firstbgsound;
+
+    long playerNum;
+    Sprite* lastEnemy;
+
+    float lastx;
+    float lasty;
 
     // Functions
     void initKeybinds();
@@ -103,6 +116,7 @@ public:
 
     void spawnEnemies();
     void updateEnemiesKilled();
+    void updateAmmoBoxs();
     void updateTime();
     void updateInput();
     void updateEnemiesCollide();
@@ -110,6 +124,7 @@ public:
     void updateBullets();
     void updateBulletsCollide();
     void updateDeleteBullet();
+    void updateSound();
     void updatePausedMenu();
     void updateEndMenu();
     void updateAndSaveScore();
@@ -117,6 +132,7 @@ public:
 
     void renderTime(sf::RenderTarget* target);
     void renderEnemies(sf::RenderTarget* target);
+    void renderAmmoBoxs(sf::RenderTarget* target);
     void renderBullets(sf::RenderTarget* target);
     void renderPausedMenu(sf::RenderTarget* target);
     void renderEndMenu(sf::RenderTarget* target);

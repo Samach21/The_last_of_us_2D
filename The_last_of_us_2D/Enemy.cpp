@@ -23,6 +23,9 @@ void Enemy::initVariables()
 	this->targetPo.x = 0.f;
 	this->targetPo.y = 0.f;
 	this->hearRange = 200.f;
+	this->a = 0;
+	this->b = 0;
+	this->c = 0;
 }
 
 void Enemy::initColor()
@@ -142,12 +145,32 @@ void Enemy::initAnimetion()
 	this->wallTime.restart();
 }
 
+void Enemy::initSounds()
+{
+	if (!this->killedBuff.loadFromFile("Sounds/enemyDeath.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->kill.setBuffer(this->killedBuff);
+	this->kill.setVolume(50.f);
+
+	if (!this->ventBuff.loadFromFile("Sounds/vent.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->vent.setBuffer(this->ventBuff);
+	this->vent.setVolume(50.f);
+
+	if (!this->walkBuff.loadFromFile("Sounds/enemyWalk.wav"))
+		throw("ERROR::GAMESTATE::COULD_NOT_LOAD_SOUND");
+	this->walk.setBuffer(this->walkBuff);
+	this->walk.setVolume(70.f);
+	this->walk.setLoop(true);
+}
+
 Enemy::Enemy(float x, float y)
 {
 	this->initVariables();
 	this->initColor();
 	this->initSprite(x, y);
 	this->initAnimetion();
+	this->initSounds();
 }
 
 Enemy::~Enemy()
@@ -259,6 +282,43 @@ void Enemy::updateWalk()
 			this->movementSpeed = 12.f;
 		}
 		walking(&randposi.x, &randposi.y);
+	}
+}
+
+void Enemy::updateSound()
+{
+	if (this->moving)
+		this->a++;
+	else if (!this->moving && this->a > 0) {
+		this->a = 0;
+		this->walk.stop();
+	}
+	if (this->isDead)
+		this->b++;
+	else if (!this->isDead && this->b > 0)
+		this->b = 0;
+	if (this->spawning)
+		this->c++;
+	else if (!this->spawning && this->c > 0)
+		this->c = 0;
+
+	if (this->a == 1)
+		this->walk.play();
+	if (this->b == 1)
+		this->kill.play();
+	if (this->c == 1)
+		this->vent.play();
+
+	if (this->shadowSprite.getPosition().x > 0.f &&
+		this->shadowSprite.getPosition().x < 1920.f &&
+		this->shadowSprite.getPosition().y > 0.f &&
+		this->shadowSprite.getPosition().y < 1080.f) {
+		this->walk.setVolume(50.f);
+		this->vent.setVolume(50.f);
+	}
+	else {
+		this->walk.setVolume(0.f);
+		this->vent.setVolume(0.f);
 	}
 }
 
@@ -480,6 +540,7 @@ void Enemy::update(RenderTarget* target, float x, float y)
 	this->updateInput();
 	if (!this->isDead)
 		this->updateWalk();
+	this->updateSound();
 	this->updatePosition(x, y);
 	this->updateAnimation();
 }

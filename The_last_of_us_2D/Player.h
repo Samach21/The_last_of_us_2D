@@ -52,7 +52,6 @@ private:
 	Texture sweatTexture;
 	Sprite sweat;
 
-	bool moving;
 	bool running;
 	bool lying;
 	bool jumping;
@@ -83,6 +82,7 @@ public:
 	Player();
 	virtual ~Player();
 
+	bool moving;
 	int slot;
 	Sprite ellieShadow;
 	HitboxComponent* hitbox;
